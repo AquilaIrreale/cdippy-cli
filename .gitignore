@@ -50,3 +50,27 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Other stuff
+*.log
+*.tar*
+.deps
+Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache
+cdippy-cli
+compile
+config.h
+config.h.in
+config.h.in~
+config.log
+config.status
+configure
+depcomp
+install-sh
+missing
+src/.deps
+src/.timestamps
+stamp-h1
+ylwrap
