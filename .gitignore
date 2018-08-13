@@ -70,7 +70,12 @@ configure
 depcomp
 install-sh
 missing
+session.vim
 src/.deps
+src/.dirstamp
 src/.timestamps
+src/lexer.c
+src/parser.c
+src/parser.h
 stamp-h1
 ylwrap
