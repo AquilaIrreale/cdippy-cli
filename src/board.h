@@ -90,5 +90,6 @@ const char *get_nation_name(enum nation nation);
 void board_init();
 void set_terrs(tclist_t tclist, enum unit unit, enum nation nation);
 void clear_terrs(tclist_t tclist);
+void clear_all_terrs();
 
 #endif /* _BOARD_H_ */

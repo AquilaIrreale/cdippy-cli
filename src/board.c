@@ -131,3 +131,8 @@ void clear_terrs(tclist_t tclist)
 {
     /* TODO */
 }
+
+void clear_all_terrs()
+{
+    /* TODO */
+}

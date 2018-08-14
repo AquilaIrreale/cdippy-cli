@@ -212,6 +212,7 @@ int recognize_keyword(char *yytext)
         const char *name;
         int code;
     } keywords[] = {
+        {"all",    ALL},
         {"clear",  CLEAR},
         {"delete", DELETE},
         {"list",   LIST},

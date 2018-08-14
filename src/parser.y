@@ -45,9 +45,12 @@ void range_error(unsigned a, unsigned b);
     tclist_t tclist;
     struct range r;
     rangelist_t rlist;
+    terrlist_t tlist;
     char *s;
+    bool b;
 }
 
+%token ALL
 %token CLEAR
 %token DELETE
 %token LIST
@@ -104,6 +107,7 @@ set: SET tclist UNIT NATION { set_terrs($2, $3, $4); tclist_free($2); }
    | SET PHASE SEASON       { set_phase($3); }
 
 clear: CLEAR tclist { clear_terrs($2); tclist_free($2); }
+     | CLEAR ALL    { clear_all_terrs(); }
 
 tclist: terr_coast        { $$ = tclist_cons($1); }
       | tclist terr_coast { $$ = tclist_add($1, $2); }
@@ -142,6 +146,7 @@ const char *tokenstr(int token)
         int code;
         const char *name;
     } keywords[] = {
+        {ALL,    "all"},
         {CLEAR,  "clear"},
         {DELETE, "delete"},
         {LIST,   "list"},
