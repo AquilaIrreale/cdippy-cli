@@ -24,6 +24,7 @@
 #include <config.h>
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <ctype.h>
 
 #include "commons.h"
@@ -51,14 +52,18 @@ void range_error(unsigned a, unsigned b);
 }
 
 %token ALL
+%token C
 %token CLEAR
 %token DELETE
 %token LIST
+%token H
 %token PHASE
 %token RESET
 %token RUN
+%token S
 %token SET
 %token STATE
+%token VIA
 %token YEAR
 
 %token <i> NATION
@@ -80,9 +85,14 @@ void range_error(unsigned a, unsigned b);
 %type <r> range
 %type <rlist> range_list
 
+%type <tlist> tlist
+
+%type <b> viac
+
 %start commands
 
 %destructor { tclist_free($$); } <tclist>
+%destructor { terrlist_free($$); } <tlist>
 %destructor { rangelist_free($$); } <rlist>
 %destructor { free($$); } <s>
 
@@ -136,7 +146,17 @@ range: NUM '-' NUM {
     $$.b = $1 + 1;
 }
 
-order: /* TODO */
+tlist: TERR       { $$ = terrlist_cons($1); }
+     | tlist TERR { $$ = terrlist_add($1, $2); }
+
+viac: VIA C         { $$ = true; }
+    | /* Nothing */ { $$ = false; }
+
+order: tlist H                  { order_hold($1); terrlist_free($1); }
+     | TERR '-' terr_coast viac { order_move($1, $3, $4); }
+     | tlist S TERR             { order_suph($1, $3); terrlist_free($1); }
+     | tlist S TERR '-' TERR    { order_supm($1, $3, $5); terrlist_free($1); }
+     | tlist C TERR '-' TERR    { order_conv($1, $3, $5); terrlist_free($1); }
 
 %%
 
@@ -147,15 +167,19 @@ const char *tokenstr(int token)
         const char *name;
     } keywords[] = {
         {ALL,    "all"},
+        {C,      "c"},
         {CLEAR,  "clear"},
         {DELETE, "delete"},
+        {H,      "h"},
         {LIST,   "list"},
         {PHASE,  "phase"},
         {RESET,  "reset"},
         {RUN,    "run"},
+        {S,      "s"},
         {SET,    "set"},
         {STATE,  "state"},
-        {YEAR,   "year"}
+        {VIA,    "via"},
+        {YEAR,   "year"},
     };
 
     size_t i;

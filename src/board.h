@@ -68,6 +68,7 @@ struct terr_coast {
     enum coast coast;
 };
 
+DEFINE_LIST(terr, enum terr);
 DEFINE_LIST(tc, struct terr_coast);
 
 struct terr_info {

@@ -21,6 +21,7 @@
 #define _GAME_H_
 
 #include "commons.h"
+#include "board.h"
 
 enum era {
     BC = -1,
@@ -30,6 +31,12 @@ enum era {
 void set_phase();
 void set_year();
 void select_nation();
+
+void order_hold(terrlist_t tlist);
+void order_move(enum terr t2, struct terr_coast t3c, bool viac);
+void order_suph(terrlist_t tlist, enum terr t2);
+void order_supm(terrlist_t tlist, enum terr t2, enum terr t3);
+void order_conv(terrlist_t tlist, enum terr t2, enum terr t3);
 
 void delete_orders(rangelist_t list);
 void list_orders();

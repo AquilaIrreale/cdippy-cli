@@ -60,3 +60,28 @@ void adjudicate()
 {
     /* TODO */
 }
+
+void order_hold(terrlist_t tlist)
+{
+    /* TODO */
+}
+
+void order_move(enum terr t2, struct terr_coast t3c, bool viac)
+{
+    /* TODO */
+}
+
+void order_suph(terrlist_t tlist, enum terr t2)
+{
+    /* TODO */
+}
+
+void order_supm(terrlist_t tlist, enum terr t2, enum terr t3)
+{
+    /* TODO */
+}
+
+void order_conv(terrlist_t tlist, enum terr t2, enum terr t3)
+{
+    /* TODO */
+}

@@ -213,15 +213,19 @@ int recognize_keyword(char *yytext)
         int code;
     } keywords[] = {
         {"all",    ALL},
+        {"c",      C},
         {"clear",  CLEAR},
         {"delete", DELETE},
+        {"h",      H},
         {"list",   LIST},
         {"phase",  PHASE},
         {"reset",  RESET},
         {"run",    RUN},
+        {"s",      S},
         {"set",    SET},
         {"state",  STATE},
-        {"year",   YEAR}
+        {"via",    VIA},
+        {"year",   YEAR},
     };
 
     size_t i;
