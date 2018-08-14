@@ -20,14 +20,19 @@
 #ifndef _GAME_H_
 #define _GAME_H_
 
-#include "list.h"
+#include "commons.h"
 
-struct range {
-    unsigned a, b;
+enum era {
+    BC = -1,
+    AD = 1
 };
 
-DEFINE_LIST(range, struct range);
+void set_phase();
+void set_year();
+void select_nation();
 
 void delete_orders(rangelist_t list);
+void list_orders();
+void adjudicate();
 
 #endif /* _GAME_H_ */

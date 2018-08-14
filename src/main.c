@@ -17,6 +17,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "commons.h"
+#include "board.h"
 #include "parser.h"
 
 int main()

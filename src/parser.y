@@ -19,14 +19,22 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* TODO: use bison */
+
 #include <config.h>
 
-#include "orders.h"
+#include <stdio.h>
+#include <ctype.h>
+
+#include "commons.h"
 #include "game.h"
+#include "board.h"
 
 void yyerror(const char *s);
 int yywrap();
 int yylex();
+
+void range_error(unsigned a, unsigned b);
 
 %}
 
@@ -37,13 +45,18 @@ int yylex();
     tclist_t tclist;
     struct range r;
     rangelist_t rlist;
+    char *s;
 }
 
-%token SET
-%token RESET
-%token YEAR
-%token PHASE 
+%token CLEAR
 %token DELETE
+%token LIST
+%token PHASE
+%token RESET
+%token RUN
+%token SET
+%token STATE
+%token YEAR
 
 %token <i> NATION
 %token <i> TERR
@@ -54,18 +67,27 @@ int yylex();
 
 %token <u> NUM
 
+%token <s> UNRECOGNIZED
+
+%type <i> era
+
 %type <tc> terr_coast
-%type <tclist> tlist
+%type <tclist> tclist
 
 %type <r> range
 %type <rlist> range_list
 
-%start input
+%start commands
+
+%destructor { tclist_free($$); } <tclist>
+%destructor { rangelist_free($$); } <rlist>
+%destructor { free($$); } <s>
 
 %%
 
-input: /* Nothing */
-     | input command '\n'
+commands: /* Nothing */
+        | commands command '\n'
+        | commands error '\n' { yyerrok; }
 
 command: set
        | order
@@ -73,38 +95,122 @@ command: set
        | clear
        | NATION { select_nation($1); }
        | LIST   { list_orders(); }
-       | STATE  { print_state(); }
-       | RESET  { load_defaults(); }
+       | STATE  { print_board(); }
+       | RESET  { board_init(); }
        | RUN    { adjudicate(); }
 
-set: SET tclist UNIT NATION { set_terrs($2, $3, $4); tclist_free(&$2); }
+set: SET tclist UNIT NATION { set_terrs($2, $3, $4); tclist_free($2); }
    | SET YEAR NUM era       { set_year($3 * $4); }
    | SET PHASE SEASON       { set_phase($3); }
+
+clear: CLEAR tclist { clear_terrs($2); tclist_free($2); }
 
 tclist: terr_coast        { $$ = tclist_cons($1); }
       | tclist terr_coast { $$ = tclist_add($1, $2); }
 
-terr_coast: TERR COAST { $$.terr = $1; $$.coast = $2 }
-          | TERR       { $$.terr = $1; $$.coast = NONE }
+terr_coast: TERR COAST { $$.terr = $1; $$.coast = $2; }
+          | TERR       { $$.terr = $1; $$.coast = NONE; }
 
 era: ERA
-   | /* Default */ { $$ = AD }
+   | /* Default */ { $$ = AD; }
 
 delete: DELETE range_list { delete_orders($2); rangelist_free($2); }
 
 range_list: range            { $$ = rangelist_cons($1); }
           | range_list range { $$ = rangelist_add($1, $2); }
 
-range: NUM '-' NUM { $$ = {$1, $3 + 1} }
-     | NUM         { $$ = {$1, $1 + 1} }
+range: NUM '-' NUM {
+    if ($1 > $3) {
+        range_error($1, $3);
+        YYERROR;
+    }
+
+    $$.a = $1;
+    $$.b = $3 + 1;
+} | NUM {
+    $$.a = $1;
+    $$.b = $1 + 1;
+}
+
+order: /* TODO */
 
 %%
 
+const char *tokenstr(int token)
+{
+    static struct {
+        int code;
+        const char *name;
+    } keywords[] = {
+        {CLEAR,  "clear"},
+        {DELETE, "delete"},
+        {LIST,   "list"},
+        {PHASE,  "phase"},
+        {RESET,  "reset"},
+        {RUN,    "run"},
+        {SET,    "set"},
+        {STATE,  "state"},
+        {YEAR,   "year"}
+    };
+
+    size_t i;
+    for (i = 0; i < ARRSIZE(keywords); i++) {
+        if (keywords[i].code == token) {
+            return keywords[i].name;
+        }
+    }
+
+    switch (token) {
+    case NATION:
+        return get_nation_name(yylval.i);
+
+    case TERR:
+        return get_terr_name(yylval.i);
+
+    case COAST:
+    case UNIT:
+    case ERA:
+    case SEASON:
+        break; /* TODO */
+    }
+
+    return "?!";
+}
+
 void yyerror(const char *s)
 {
-    fputs(s, stderr);
-    fputc('\n', stderr);
-    exit(1);
+    switch (yychar) {
+    case YYEMPTY:
+        fprintf(stderr, "%s\n", s);
+        return;
+
+    case YYEOF:
+        fprintf(stderr, "%s: unexpected EOF\n", s);
+        return;
+
+    case '\n':
+        fprintf(stderr, "%s: incomplete command\n", s);
+        return;
+
+    case UNRECOGNIZED:
+        fprintf(stderr, "%s: unknown keyword `%s'\n", s, yylval.s);
+        return;
+
+    case NUM:
+        fprintf(stderr, "%s: unexpected token `%u'\n", s, yylval.u);
+        return;
+    }
+
+    if (isprint(yychar)) {
+        fprintf(stderr, "%s: unexpected token `%c'\n", s, yychar);
+    } else {
+        fprintf(stderr, "%s: unexpected token `%s'\n", s, tokenstr(yychar));
+    }
+}
+
+void range_error(unsigned a, unsigned b)
+{
+    fprintf(stderr, "syntax error: invalid range `%u-%u'\n", a, b);
 }
 
 int yywrap()

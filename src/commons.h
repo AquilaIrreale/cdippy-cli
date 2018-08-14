@@ -17,46 +17,22 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
+#ifndef _COMMONS_H_
+#define _COMMONS_H_
 
-#include "game.h"
+#include <stdbool.h>
 
-void set_phase()
-{
-    /* TODO */
-}
+#include "list.h"
 
-void set_year()
-{
-    /* TODO */
-}
+#define ARRSIZE(a) (sizeof (a) / sizeof (a)[0])
 
-void select_nation()
-{
-    /* TODO */
-}
+struct range {
+    unsigned a, b;
+};
 
-void delete_orders(rangelist_t list)
-{
-    while (list != NULL) {
-        if (list->car.a >= list->car.b) {
-            printf("Invalid range: %u-%u\n", list->car.a, list->car.b - 1);
-        } else if (list->car.a == list->car.b - 1) {
-            printf("%u\n", list->car.a);
-        } else {
-            printf("%u-%u\n", list->car.a, list->car.b - 1);
-        }
+DEFINE_LIST(range, struct range);
 
-        list = list->cdr;
-    }
-}
+bool strisblank(const char *s);
+int istrcmp(const char *s1, const char *s2);
 
-void list_orders()
-{
-    /* TODO */
-}
-
-void adjudicate()
-{
-    /* TODO */
-}
+#endif /* _COMMONS_H_ */

@@ -9,7 +9,6 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile])
 
 # Checks for programs.
-AC_PROG_CC
 AC_PROG_CC_C99
 
 AC_PROG_LEX
@@ -18,6 +17,9 @@ if test "x$LEX" != xflex; then
 fi
 
 AC_PROG_YACC
+if test "x$YACC" != 'xbison -y'; then
+    AC_MSG_ERROR([bison is required to build this software])
+fi
 
 # Checks for libraries.
 AC_CHECK_LIB([readline], [readline])

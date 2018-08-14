@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
 #include <stddef.h>
@@ -29,77 +30,56 @@
 
 #include <readline/readline.h>
 
-#include "parser.h"
+#include "commons.h"
+#include "board.h"
+#include "game.h"
 
 #define PROMPT "> "
 
 #define YY_INPUT(buf, result, max_size)     \
-{                                           \
-    result = readline_input(buf, max_size); \
-}
+    result = readline_input(buf, max_size)
 
 size_t readline_input(char buf[], size_t max_size);
-int parse_keyword(yytext);
+int recognize_keyword(char *yytext);
+
+#include "parser.h"
 
 %}
 
-%noyywrap
+%option caseless
+%option noyywrap
 
 %%
 
 [ \r\t\v\f\b]+ { ; /* Ignore */ }
 
-[Aa][Uu][Ss][Tt][Rr][Ii][Aa]|\
-[Ee][Nn][Gg][Ll][Aa][Nn][Dd]|\
-[Ff][Rr][Aa][Nn][Cc][Ee]|\
-[Gg][Ee][Rr][Mm][Aa][Nn][Yy]|\
-[Ii][Tt][Aa][Ll][Yy]|\
-[Rr][Uu][Ss][Ss][Ii][Aa]|\
-[Tt][Uu][Rr][Kk][Ee][Yy] {
-    yylval.i = parse_nation(yytext);
-    return NATION;
-}
-
-[Aa][Dd][Rr]|[Aa][Ee][Gg]|[Aa][Ll][Bb]|[Aa][Nn][Kk]|\
-[Aa][Pp][Uu]|[Aa][Rr][Mm]|[Bb][Aa][Ll]|[Bb][Aa][Rr]|\
-[Bb][Ee][Ll]|[Bb][Ee][Rr]|[Bb][Ll][Aa]|[Bb][Oo][Hh]|\
-[Bb][Oo][Tt]|[Bb][Rr][Ee]|[Bb][Uu][Dd]|[Bb][Uu][Ll]|\
-[Bb][Uu][Rr]|[Cc][Ll][Yy]|[Cc][Oo][Nn]|[Dd][Ee][Nn]|\
-[Ee][Aa][Ss]|[Ee][Dd][Ii]|[Ee][Nn][Gg]|[Ff][Ii][Nn]|\
-[Gg][Aa][Ll]|[Gg][Aa][Ss]|[Gg][Rr][Ee]|[Hh][Ee][Ll]|\
-[Hh][Oo][Ll]|[Ii][Oo][Nn]|[Ii][Rr][Ii]|[Kk][Ii][Ee]|\
-[Ll][Oo][Nn]|[Ll][Vv][Nn]|[Ll][Vv][Pp]|[Ll][Yy][Oo]|\
-[Mm][Aa][Oo]|[Mm][Aa][Rr]|[Mm][Oo][Ss]|[Mm][Uu][Nn]|\
-[Nn][Aa][Ff]|[Nn][Aa][Oo]|[Nn][Aa][Pp]|[Nn][Tt][Hh]|\
-[Nn][Ww][Gg]|[Nn][Ww][Yy]|[Pp][Aa][Rr]|[Pp][Ii][Cc]|\
-[Pp][Ii][Ee]|[Pp][Oo][Rr]|[Pp][Rr][Uu]|[Rr][Oo][Mm]|\
-[Rr][Uu][Hh]|[Rr][Uu][Mm]|[Ss][Ee][Rr]|[Ss][Ee][Vv]|\
-[Ss][Ii][Ll]|[Ss][Kk][Aa]|[Ss][Mm][Yy]|[Ss][Pp][Aa]|\
-[Ss][Tt][Pp]|[Ss][Ww][Ee]|[Ss][Yy][Rr]|[Tt][Rr][Ii]|\
-[Tt][Uu][Nn]|[Tt][Uu][Ss]|[Tt][Yy][Rr]|[Tt][Yy][Ss]|\
-[Uu][Kk][Rr]|[Vv][Ee][Nn]|[Vv][Ii][Ee]|[Ww][Aa][Ll]|\
-[Ww][Aa][Rr]|[Ww][Ee][Ss]|[Yy][Oo][Rr] {
-    yylval.i = parse_terr(yytext);
-    return TERR;
-}
-
-\([Nn][Cc]\) {
-    yylval.i = NC;
+\(NC\) {
+    yylval.i = NORTH;
     return COAST;
 }
 
-\([Ss][Cc]\) {
-    yylval.i = SC;
+\(SC\) {
+    yylval.i = SOUTH;
     return COAST;
 }
 
-[Bb][Cc]|[Bb]\.[Cc]\.|[Bb][Cc][Ee]|[Bb]\.[Cc]\.[Ee]\. {
-    yylval.i = -1;
+F|FLEET {
+    yylval.i = FLEET;
+    return UNIT;
+}
+
+A|ARMY {
+    yylval.i = ARMY;
+    return UNIT;
+}
+
+BC|B\.C\.|BCE|B\.C\.E\. {
+    yylval.i = BC;
     return ERA;
 }
 
-[Aa][Dd]|[Aa]\.[Dd]\.|[Cc][Ee]|[Cc]\.[Ee]\. {
-    yylval.i = 1;
+AD|A\.D\.|CE|C\.E\. {
+    yylval.i = AD;
     return ERA;
 }
 
@@ -108,55 +88,74 @@ int parse_keyword(yytext);
     return NUM;
 }
 
-[A-Za-z]+ {
-    return parse_keyword(yytext);
+[a-z_][a-z0-9_]* {
+    int ret = get_nation(yytext);
+    if (ret != NO_NATION) {
+        yylval.i = ret;
+        return NATION;
+    }
+
+    ret = get_terr(yytext);
+    if (ret != NO_TERR) {
+        yylval.i = ret;
+        return TERR;
+    }
+
+    ret = recognize_keyword(yytext);
+
+    if (ret == UNRECOGNIZED) {
+        yylval.s = malloc(sizeof(yytext) + 1);
+        strcpy(yylval.s, yytext);
+    }
+
+    return ret;
 }
 
 .|\n { return *yytext; }
 
 %%
 
-int parse_keyword(yytext)
-{
-    static struct {
-        char *name;
-        int code;
-    } commands = {
-        {"DELETE", DELETE},
-        {"PHASE",  PHASE},
-        {"RESET",  RESET},
-        {"SET",    SET},
-        {"YEAR",   YEAR}
-    };
-
-    size_t i;
-    for (i = 0; i < ARRSIZE(commands); i++) {
-        if (strcmp(commands[i].name, yytext) == 0) {
-            return commands[i].code;
-        };
-    };
-}
-
 /*
-int parse_keyword(yytext)
+size_t readline_input(char buf[], size_t max_size)
 {
-    static struct {
-        char *name;
-        int code;
-        bool valid;
-    } commands = {
-        {"DELETE", DELETE, true},
-        {"PHASE",  PHASE,  true},
-        {"RESET",  RESET,  true},
-        {"SET",    SET,    true},
-        {"YEAR",   YEAR,   true}
-    };
+    static bool newline = false;
+    static char *line = NULL;
+    static size_t linelen = 0;
+    static size_t pos = 0;
 
-    size_t i;
-    for (i = 0; i < ARRSIZE(commands); i++) {
+    if (newline) {
+        buf[0] = '\n';
+        return 1;
     }
-    
-    return 0;
+
+    if (line == NULL) {
+        do {
+            free(line);
+            line = readline(PROMPT);
+        } while (strisblank(line));
+
+        linelen = strlen(line);
+    }
+
+    size_t n;
+    sprintf(buf, "%*s%zn", max_size, line, &n);
+
+    if (n <= max_size) {
+        free(line);
+        line = NULL;
+
+        if (n < max_size) {
+            buf[n++] = '\n';
+        } else if (linelen == max_size) {
+            newline = true;
+        }
+    } else {
+        newline = true;
+    }
+
+    size_t ret = strlen(x) + 1;
+    free(x);
+    return ret;
 }
 */
 
@@ -173,11 +172,14 @@ size_t readline_input(char buf[], size_t max_size)
     }
 
     if (readline_buf == NULL) {
-        readline_buf = readline(PROMPT)
+        do {
+            readline_buf = readline(PROMPT);
 
-        if (readline_buf == NULL) {
-            return YY_NULL;
-        }
+            if (readline_buf == NULL) {
+                putchar('\n');
+                return YY_NULL;
+            }
+        } while (strisblank(readline_buf));
 
         chars_left = strlen(readline_buf);
         pos = 0;
@@ -194,7 +196,7 @@ size_t readline_input(char buf[], size_t max_size)
             newline = true;
         }
         
-        return chars_left;
+        return chars_left + 1;
     }
 
     strncpy(buf, readline_buf+pos, max_size);
@@ -202,4 +204,31 @@ size_t readline_input(char buf[], size_t max_size)
     pos += max_size;
 
     return max_size;
+}
+
+int recognize_keyword(char *yytext)
+{
+    static struct {
+        const char *name;
+        int code;
+    } keywords[] = {
+        {"clear",  CLEAR},
+        {"delete", DELETE},
+        {"list",   LIST},
+        {"phase",  PHASE},
+        {"reset",  RESET},
+        {"run",    RUN},
+        {"set",    SET},
+        {"state",  STATE},
+        {"year",   YEAR}
+    };
+
+    size_t i;
+    for (i = 0; i < ARRSIZE(keywords); i++) {
+        if (istrcmp(keywords[i].name, yytext) == 0) {
+            return keywords[i].code;
+        };
+    };
+
+    return UNRECOGNIZED;
 }

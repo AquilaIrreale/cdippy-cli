@@ -23,14 +23,15 @@
 #include "list.h"
 
 enum nation {
-    NO_NATION =  0,
-    AUSTRIA   =  1,
-    ENGLAND   =  2,
-    FRANCE    =  4,
-    GERMANY   =  8,
-    ITALY     = 16,
-    RUSSIA    = 32,
-    TURKEY    = 64
+    NO_NATION = -1,
+    AUSTRIA,
+    ENGLAND,
+    FRANCE,
+    GERMANY,
+    ITALY,
+    RUSSIA,
+    TURKEY,
+    NATIONS_N
 };
 
 enum unit {
@@ -69,16 +70,25 @@ struct terr_coast {
 
 DEFINE_LIST(tc, struct terr_coast);
 
-struct terr {
+struct terr_info {
     enum unit unit;
     enum coast coast;
     enum nation nation;
 };
 
-struct terr board[TERR_N];
+struct terr_info board[TERR_N];
 
-void init_board();
+void print_board();
 
+int get_terr(const char *name);
+int get_nation(const char *name);
+
+const char *get_terr_name(enum terr terr);
+const char *get_coast_name(enum coast coast);
+const char *get_nation_name(enum nation nation);
+
+void board_init();
 void set_terrs(tclist_t tclist, enum unit unit, enum nation nation);
+void clear_terrs(tclist_t tclist);
 
 #endif /* _BOARD_H_ */

@@ -10,6 +10,7 @@ cdippy_cli_SOURCES = src/board.c \
                      src/lexer.l \
                      src/main.c \
                      src/parser.y \
+                     src/commons.c
 
 CLEANFILES = src/parser.h \
              src/parser.c \
