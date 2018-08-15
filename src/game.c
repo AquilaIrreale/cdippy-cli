@@ -21,6 +21,14 @@
 
 #include "game.h"
 
+#define VALIDATE_CUR_NAT()             \
+do {                                   \
+    if (cur_nat == NO_NATION) {        \
+        puts("Select a nation first"); \
+        return;                        \
+    }                                  \
+} while (0)
+
 static enum nation cur_nat = NO_NATION;
 
 static size_t orders_n[NATIONS_N];
@@ -155,6 +163,8 @@ void register_order(enum nation nat,
 
 void order_hold(terrlist_t tlist)
 {
+    VALIDATE_CUR_NAT();
+
     while (tlist) {
         register_order(cur_nat, HOLD, tlist->item,
                        NO_TERR, NO_TERR, NO_COAST, false);
@@ -164,11 +174,15 @@ void order_hold(terrlist_t tlist)
 
 void order_move(enum terr t2, struct terr_coast t3c, bool viac)
 {
+    VALIDATE_CUR_NAT();
+
     register_order(cur_nat, MOVE, t2, t2, t3c.terr, t3c.coast, viac);
 }
 
 void order_suph(terrlist_t tlist, enum terr t2)
 {
+    VALIDATE_CUR_NAT();
+
     while (tlist) {
         register_order(cur_nat, SUPH, tlist->item, t2,
                        NO_TERR, NO_COAST, false);
@@ -178,6 +192,8 @@ void order_suph(terrlist_t tlist, enum terr t2)
 
 void order_supm(terrlist_t tlist, enum terr t2, enum terr t3)
 {
+    VALIDATE_CUR_NAT();
+
     while (tlist) {
         register_order(cur_nat, SUPM, tlist->item, t2, t3, NO_COAST, false);
         LIST_ADVANCE(tlist);
@@ -186,6 +202,8 @@ void order_supm(terrlist_t tlist, enum terr t2, enum terr t3)
 
 void order_conv(terrlist_t tlist, enum terr t2, enum terr t3)
 {
+    VALIDATE_CUR_NAT();
+
     while (tlist) {
         register_order(cur_nat, CONV, tlist->item, t2, t3, NO_COAST, false);
         LIST_ADVANCE(tlist);
