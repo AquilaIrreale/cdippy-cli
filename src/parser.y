@@ -1,5 +1,3 @@
-%{
-
 /*  cdippy-cli - Keeps track of a game of Diplomacy, and adjudicates
  *               orders automatically
  *
@@ -19,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* TODO: use bison */
+%{
 
 #include <config.h>
 

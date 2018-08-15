@@ -115,50 +115,6 @@ AD|A\.D\.|CE|C\.E\. {
 
 %%
 
-/*
-size_t readline_input(char buf[], size_t max_size)
-{
-    static bool newline = false;
-    static char *line = NULL;
-    static size_t linelen = 0;
-    static size_t pos = 0;
-
-    if (newline) {
-        buf[0] = '\n';
-        return 1;
-    }
-
-    if (line == NULL) {
-        do {
-            free(line);
-            line = readline(PROMPT);
-        } while (strisblank(line));
-
-        linelen = strlen(line);
-    }
-
-    size_t n;
-    sprintf(buf, "%*s%zn", max_size, line, &n);
-
-    if (n <= max_size) {
-        free(line);
-        line = NULL;
-
-        if (n < max_size) {
-            buf[n++] = '\n';
-        } else if (linelen == max_size) {
-            newline = true;
-        }
-    } else {
-        newline = true;
-    }
-
-    size_t ret = strlen(x) + 1;
-    free(x);
-    return ret;
-}
-*/
-
 size_t readline_input(char buf[], size_t max_size)
 {
     static char *readline_buf = NULL;
@@ -195,7 +151,7 @@ size_t readline_input(char buf[], size_t max_size)
         } else {
             newline = true;
         }
-        
+
         return chars_left + 1;
     }
 
