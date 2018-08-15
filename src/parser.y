@@ -17,6 +17,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+%define lr.type ielr
+%define parse.lac full
+
 %{
 
 #include <config.h>
