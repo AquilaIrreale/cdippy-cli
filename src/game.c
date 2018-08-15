@@ -118,9 +118,78 @@ void delete_orders(rangelist_t list)
     }
 }
 
-void list_orders()
+size_t get_orders_base_index(enum nation nat)
 {
-    /* TODO */
+    size_t ret = 1;
+
+    enum nation n;
+    for (n = 0; n < nat; n++) {
+        ret += orders_n[n];
+    }
+
+    return ret;
+}
+
+size_t orders_n_tot()
+{
+    size_t ret;
+
+    enum nation n;
+    for (n = 0; n < NATIONS_N; n++) {
+        ret += orders_n[n];
+    }
+
+    return ret;
+}
+
+void list_orders(enum nation nat)
+{
+    if (nat == NO_NATION) {
+        VALIDATE_CUR_NAT();
+        nat = cur_nat;
+    }
+
+    if (orders_n[nat] == 0) {
+        printf("No orders from %s\n", get_nation_name(nat));
+        return;
+    }
+
+    size_t base = get_orders_base_index(nat);
+    int w = (int)decimal_places(orders_n_tot());
+
+    size_t i;
+    for (i = 0; i < orders_n[nat]; i++) {
+        printf("%*zu: ", w, base + i);
+        print_order(orders[nat][i], true);
+    }
+}
+
+void list_all_orders()
+{
+    bool any = false;
+    size_t i = 1;
+    int w = (int)decimal_places(orders_n_tot());
+
+    enum nation n;
+    for (n = 0; n < NATIONS_N; n++) {
+        if (orders_n[n] == 0) {
+            continue;
+        }
+
+        any = true;
+
+        puts(get_nation_name(n));
+
+        size_t j;
+        for (j = 0; j < orders_n[n]; j++) {
+            printf("%*zu: ", w, i++);
+            print_order(orders[n][j], true);
+        }
+    }
+
+    if (!any) {
+        puts("No orders");
+    }
 }
 
 void adjudicate()

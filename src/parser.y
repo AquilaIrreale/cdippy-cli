@@ -105,8 +105,8 @@ command: set
        | order
        | delete
        | clear
+       | list
        | NATION { select_nation($1); }
-       | LIST   { list_orders(); }
        | STATE  { print_board(); }
        | RESET  { board_init(); }
        | RUN    { adjudicate(); }
@@ -117,6 +117,10 @@ set: SET tclist UNIT NATION { set_terrs($2, $3, $4); tclist_free($2); }
 
 clear: CLEAR tclist { clear_terrs($2); tclist_free($2); }
      | CLEAR ALL    { clear_all_terrs(); }
+
+list: LIST NATION { list_orders($2); }
+    | LIST ALL    { list_all_orders(); }
+    | LIST        { list_orders(NO_NATION); }
 
 tclist: terr_coast        { $$ = tclist_cons($1); }
       | tclist terr_coast { $$ = tclist_add($1, $2); }

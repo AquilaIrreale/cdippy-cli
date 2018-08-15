@@ -21,3 +21,14 @@ int istrcmp(const char *s1, const char *s2)
 
     return tolower(*s1) - tolower(*s2);
 }
+
+size_t decimal_places(size_t n)
+{
+    size_t ret = 1;
+
+    while (n /= 10) {
+        ret++;
+    }
+
+    return ret;
+}
