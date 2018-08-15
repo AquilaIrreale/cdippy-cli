@@ -47,7 +47,7 @@ void delete_orders(rangelist_t list)
             printf("%u-%u\n", list->item.a, list->item.b - 1);
         }
 
-        list = list->next;
+        LIST_ADVANCE(list);
     }
 }
 

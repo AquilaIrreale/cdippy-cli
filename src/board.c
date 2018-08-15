@@ -123,7 +123,7 @@ void set_terrs(tclist_t tclist, enum unit unit, enum nation nation)
 {
     while (tclist != NULL) {
         printf("%s %s\n", get_terr_name(tclist->item.terr), get_coast_name(tclist->item.coast));
-        tclist = tclist->next;
+        LIST_ADVANCE(tclist);
     }
 }
 
