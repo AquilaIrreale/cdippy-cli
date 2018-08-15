@@ -19,10 +19,13 @@
 
 #include "commons.h"
 #include "board.h"
+#include "game.h"
+
 #include "parser.h"
 
 int main()
 {
+    game_init();
     yyparse();
 
     return 0;

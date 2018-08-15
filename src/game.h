@@ -23,10 +23,33 @@
 #include "commons.h"
 #include "board.h"
 
+#define GOAL 18
+
 enum era {
     BC = -1,
     AD = 1
 };
+
+enum order_kind {
+    NULL_ORDER,
+    HOLD,
+    MOVE,
+    SUPH,
+    SUPM,
+    CONV
+};
+
+struct order {
+    enum order_kind kind;
+    enum terr t1;
+    enum terr t2;
+    enum terr t3;
+    enum coast coast;
+    bool viac;
+};
+
+void game_init();
+void phase_init();
 
 void set_phase();
 void set_year();
