@@ -147,6 +147,10 @@ void register_order(enum nation nat,
     orders[nat][i].t3    = t3;
     orders[nat][i].coast = coast;
     orders[nat][i].viac  = viac;
+
+    if (i >= orders_n[nat]) {
+        orders_n[nat]++;
+    }
 }
 
 void order_hold(terrlist_t tlist)
