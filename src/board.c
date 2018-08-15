@@ -102,7 +102,7 @@ const char *get_coast_name(enum coast coast)
         return "(NC)";
     case SOUTH:
         return "(SC)";
-    case NONE:
+    case NO_COAST:
         return "";
     default:
         return "!INVALID COAST!";

@@ -40,7 +40,7 @@ enum unit {
 };
 
 enum coast {
-    NONE,
+    NO_COAST,
     NORTH,
     SOUTH
 };

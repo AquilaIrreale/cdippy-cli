@@ -123,7 +123,7 @@ tclist: terr_coast        { $$ = tclist_cons($1); }
       | tclist terr_coast { $$ = tclist_add($1, $2); }
 
 terr_coast: TERR COAST { $$.terr = $1; $$.coast = $2; }
-          | TERR       { $$.terr = $1; $$.coast = NONE; }
+          | TERR       { $$.terr = $1; $$.coast = NO_COAST; }
 
 era: ERA
    | /* Default */ { $$ = AD; }
