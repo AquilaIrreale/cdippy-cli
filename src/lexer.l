@@ -213,6 +213,7 @@ int recognize_keyword(char *yytext)
         int code;
     } keywords[] = {
         {"all",    ALL},
+        {"by",     BY},
         {"c",      C},
         {"clear",  CLEAR},
         {"delete", DELETE},

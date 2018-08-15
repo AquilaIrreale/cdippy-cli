@@ -52,6 +52,7 @@ void range_error(unsigned a, unsigned b);
 }
 
 %token ALL
+%token BY
 %token C
 %token CLEAR
 %token DELETE
@@ -150,6 +151,8 @@ tlist: TERR       { $$ = terrlist_cons($1); }
      | tlist TERR { $$ = terrlist_add($1, $2); }
 
 viac: VIA C         { $$ = true; }
+    | BY C          { $$ = true; }
+    | C             { $$ = true; }
     | /* Nothing */ { $$ = false; }
 
 order: tlist H                  { order_hold($1); terrlist_free($1); }
@@ -167,6 +170,7 @@ const char *tokenstr(int token)
         const char *name;
     } keywords[] = {
         {ALL,    "all"},
+        {BY,     "by"},
         {C,      "c"},
         {CLEAR,  "clear"},
         {DELETE, "delete"},
