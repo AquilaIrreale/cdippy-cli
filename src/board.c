@@ -122,8 +122,8 @@ void board_init()
 void set_terrs(tclist_t tclist, enum unit unit, enum nation nation)
 {
     while (tclist != NULL) {
-        printf("%s %s\n", get_terr_name(tclist->car.terr), get_coast_name(tclist->car.coast));
-        tclist = tclist->cdr;
+        printf("%s %s\n", get_terr_name(tclist->item.terr), get_coast_name(tclist->item.coast));
+        tclist = tclist->next;
     }
 }
 

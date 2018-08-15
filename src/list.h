@@ -25,8 +25,8 @@
 #define DEFINE_LIST(name, type)                                         \
                                                                         \
 struct name##list_cons {                                                \
-    type car;                                                           \
-    struct name##list_cons *cdr;                                        \
+    type item;                                                          \
+    struct name##list_cons *next;                                       \
 };                                                                      \
                                                                         \
 typedef struct name##list_cons *name##list_t;                           \
@@ -34,25 +34,27 @@ typedef struct name##list_cons *name##list_t;                           \
 inline static name##list_t name##list_cons(type item)                   \
 {                                                                       \
     name##list_t tmp = malloc(sizeof *tmp);                             \
-    tmp->car = item;                                                    \
-    tmp->cdr = NULL;                                                    \
+    tmp->item = item;                                                   \
+    tmp->next = NULL;                                                   \
     return tmp;                                                         \
 }                                                                       \
                                                                         \
 inline static name##list_t name##list_add(name##list_t list, type item) \
 {                                                                       \
     name##list_t tmp = name##list_cons(item);                           \
-    tmp->cdr = list;                                                    \
+    tmp->next = list;                                                   \
     return tmp;                                                         \
 }                                                                       \
                                                                         \
 inline static void name##list_free(name##list_t list)                   \
 {                                                                       \
     while (list != NULL) {                                              \
-        name##list_t cdr = list->cdr;                                   \
+        name##list_t next = list->next;                                 \
         free(list);                                                     \
-        list = cdr;                                                     \
+        list = next;                                                    \
     }                                                                   \
 }
+
+#define LIST_ADVANCE(l) ((l) = ((l)->next))
 
 #endif /* _LIST_H_ */

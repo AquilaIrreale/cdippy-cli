@@ -39,15 +39,15 @@ void select_nation()
 void delete_orders(rangelist_t list)
 {
     while (list != NULL) {
-        if (list->car.a >= list->car.b) {
-            printf("Invalid range: %u-%u\n", list->car.a, list->car.b - 1);
-        } else if (list->car.a == list->car.b - 1) {
-            printf("%u\n", list->car.a);
+        if (list->item.a >= list->item.b) {
+            printf("Invalid range: %u-%u\n", list->item.a, list->item.b - 1);
+        } else if (list->item.a == list->item.b - 1) {
+            printf("%u\n", list->item.a);
         } else {
-            printf("%u-%u\n", list->car.a, list->car.b - 1);
+            printf("%u-%u\n", list->item.a, list->item.b - 1);
         }
 
-        list = list->cdr;
+        list = list->next;
     }
 }
 
