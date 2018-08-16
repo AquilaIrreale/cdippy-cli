@@ -32,3 +32,13 @@ size_t decimal_places(size_t n)
 
     return ret;
 }
+
+int size_t_cmp(const void *x, const void *y)
+{
+    size_t a = *(const size_t *)x;
+    size_t b = *(const size_t *)y;
+
+    return a < b ? -1
+         : a > b ? 1
+         : 0;
+}

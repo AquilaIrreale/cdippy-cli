@@ -61,5 +61,6 @@ DEFINE_LIST(range, struct range);
 bool strisblank(const char *s);
 int istrcmp(const char *s1, const char *s2);
 size_t decimal_places(size_t n);
+int size_t_cmp(const void *x, const void *y);
 
 #endif /* _COMMONS_H_ */
