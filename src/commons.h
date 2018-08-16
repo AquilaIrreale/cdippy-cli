@@ -20,6 +20,7 @@
 #ifndef _COMMONS_H_
 #define _COMMONS_H_
 
+#include <stddef.h>
 #include <stdbool.h>
 
 #include "list.h"
@@ -28,11 +29,28 @@
 
 #define SWAP(type, a, b) \
 do {                     \
-    type tmp = a;        \
+    type _tmp = a;       \
     a = b;               \
-    b = tmp;             \
+    b = _tmp;            \
 } while (0)
 
+#define GROW_VEC(v, s)             \
+do {                               \
+    s *= 3;                        \
+    s /= 2;                        \
+    v = realloc(v, s * sizeof *v); \
+} while (0)
+
+#define UNIQ(a, n)                    \
+do {                                  \
+    size_t _i, _j;                    \
+    for (_i = _j = 0; _j < n; _j++) { \
+        if (a[_j] != a[_i]) {         \
+            a[++_i] = a[_j];          \
+        }                             \
+    }                                 \
+    n = _i + 1;                       \
+} while (0)
 
 struct range {
     unsigned a, b;
