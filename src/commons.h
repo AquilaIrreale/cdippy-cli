@@ -26,6 +26,14 @@
 
 #define ARRSIZE(a) (sizeof (a) / sizeof (a)[0])
 
+#define SWAP(type, a, b) \
+do {                     \
+    type tmp = a;        \
+    a = b;               \
+    b = tmp;             \
+} while (0)
+
+
 struct range {
     unsigned a, b;
 };
