@@ -132,7 +132,7 @@ size_t get_orders_base_index(enum nation nat)
 
 size_t orders_n_tot()
 {
-    size_t ret;
+    size_t ret = 0;
 
     enum nation n;
     for (n = 0; n < NATIONS_N; n++) {
@@ -155,7 +155,7 @@ void list_orders(enum nation nat)
     }
 
     size_t base = get_orders_base_index(nat);
-    int w = (int)decimal_places(orders_n_tot());
+    int w = (int)decimal_places(base + orders_n[nat]);
 
     size_t i;
     for (i = 0; i < orders_n[nat]; i++) {
@@ -176,6 +176,8 @@ void list_all_orders()
             continue;
         }
 
+        putchar('\n');
+
         any = true;
 
         puts(get_nation_name(n));
@@ -189,6 +191,8 @@ void list_all_orders()
 
     if (!any) {
         puts("No orders");
+    } else {
+        putchar('\n');
     }
 }
 
