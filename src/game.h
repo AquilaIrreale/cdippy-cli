@@ -61,7 +61,7 @@ void order_suph(terrlist_t tlist, enum terr t2);
 void order_supm(terrlist_t tlist, enum terr t2, enum terr t3);
 void order_conv(terrlist_t tlist, enum terr t2, enum terr t3);
 
-void delete_orders(rangelist_t list);
+void delete_orders(rangelist_t ranges);
 void list_orders(enum nation nat);
 void list_all_orders();
 void adjudicate();

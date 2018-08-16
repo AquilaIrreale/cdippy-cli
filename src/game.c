@@ -34,6 +34,30 @@ static enum nation cur_nat = NO_NATION;
 static size_t orders_n[NATIONS_N];
 static struct order orders[NATIONS_N][TERR_N];
 
+size_t get_orders_base_index(enum nation nat)
+{
+    size_t ret = 1;
+
+    enum nation n;
+    for (n = 0; n < nat; n++) {
+        ret += orders_n[n];
+    }
+
+    return ret;
+}
+
+size_t orders_n_tot()
+{
+    size_t ret = 0;
+
+    enum nation n;
+    for (n = 0; n < NATIONS_N; n++) {
+        ret += orders_n[n];
+    }
+
+    return ret;
+}
+
 void game_init()
 {
     phase_init();
@@ -103,43 +127,68 @@ void print_order(struct order o, bool newline)
     }
 }
 
-void delete_orders(rangelist_t list)
+void delete_error(size_t i)
 {
-    while (list != NULL) {
-        if (list->item.a >= list->item.b) {
-            printf("Invalid range: %u-%u\n", list->item.a, list->item.b - 1);
-        } else if (list->item.a == list->item.b - 1) {
-            printf("%u\n", list->item.a);
-        } else {
-            printf("%u-%u\n", list->item.a, list->item.b - 1);
+    printf("No such order: %zu\n", i);
+}
+
+void delete_orders(rangelist_t ranges)
+{
+    size_t i = 0, j;
+    size_t size = 16;
+    size_t *indices = malloc(size * sizeof *indices);
+
+    rangelist_t l = ranges;
+    while (l) {
+        for (j = l->item.a; j < l->item.b; j++) {
+            if (i >= size) {
+                GROW_VEC(indices, size);
+            }
+
+            indices[i++] = j;
         }
 
-        LIST_ADVANCE(list);
-    }
-}
-
-size_t get_orders_base_index(enum nation nat)
-{
-    size_t ret = 1;
-
-    enum nation n;
-    for (n = 0; n < nat; n++) {
-        ret += orders_n[n];
+        LIST_ADVANCE(l);
     }
 
-    return ret;
-}
+    size_t len = i;
 
-size_t orders_n_tot()
-{
-    size_t ret = 0;
+    qsort(indices, len, sizeof *indices, size_t_cmp);
+    UNIQ(indices, len);
 
-    enum nation n;
+    if (indices[0] == 0) {
+        delete_error(0);
+        return;
+    }
+
+    size_t n = orders_n_tot();
+    for (i = 0; i <= n; i++) {
+        if (indices[i] > n) {
+            delete_error(indices[i]);
+            return;
+        }
+    }
+
+    i = 0;
+    j = 1;
+
+    size_t k, o;
     for (n = 0; n < NATIONS_N; n++) {
-        ret += orders_n[n];
+        k = 0;
+        for (o = 0; o < orders_n[n]; o++) {
+            if (j == indices[i]) {
+                i++;
+            } else {
+                orders[n][k++] = orders[n][o];
+            }
+
+            j++;
+        }
+
+        orders_n[n] = k;
     }
 
-    return ret;
+    free(indices);
 }
 
 void list_orders(enum nation nat)
