@@ -17,14 +17,52 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+
+#include <readline/history.h>
+
 #include "commons.h"
 #include "board.h"
 #include "game.h"
 
 #include "parser.h"
 
+#define HIST_FILE ".cdippy-cli_history"
+
+char *hist_path;
+
+void save_history()
+{
+    int ret = write_history(hist_path);
+    if (ret != 0) {
+        perror("save_history");
+    }
+}
+
+void load_history()
+{
+    char *home = getenv("HOME");
+
+    if (!home) {
+        return;
+    }
+
+    hist_path = malloc(strlen(home) + strlen(HIST_FILE) + 2);
+    sprintf(hist_path, "%s/%s", home, HIST_FILE);
+
+    int ret = read_history(hist_path);
+    if (ret != 0 && ret != ENOENT) {
+        perror("load_history");
+    }
+}
+
 int main()
 {
+    using_history();
+    load_history();
+    atexit(save_history);
     game_init();
     yyparse();
 

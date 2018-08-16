@@ -29,6 +29,7 @@
 #include <stdbool.h>
 
 #include <readline/readline.h>
+#include <readline/history.h>
 
 #include "commons.h"
 #include "board.h"
@@ -136,6 +137,13 @@ size_t readline_input(char buf[], size_t max_size)
                 return YY_NULL;
             }
         } while (strisblank(readline_buf));
+
+        int hpos = history_search_pos(readline_buf, 0, 0);
+        if (hpos >= 0) {
+            free_history_entry(remove_history(hpos));
+        }
+
+        add_history(readline_buf);
 
         chars_left = strlen(readline_buf);
         pos = 0;
