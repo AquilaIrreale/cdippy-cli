@@ -135,6 +135,7 @@ era: ERA
    | /* Default */ { $$ = AD; }
 
 delete: DELETE range_list { delete_orders($2); rangelist_free($2); }
+      | DELETE ALL        { delete_all_orders(); }
 
 range_list: range            { $$ = rangelist_cons($1); }
           | range_list range { $$ = rangelist_add($1, $2); }

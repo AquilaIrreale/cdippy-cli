@@ -191,6 +191,14 @@ void delete_orders(rangelist_t ranges)
     free(indices);
 }
 
+void delete_all_orders()
+{
+    size_t n;
+    for (n = 0; n < NATIONS_N; n++) {
+        orders_n[n] = 0;
+    }
+}
+
 void list_orders(enum nation nat)
 {
     if (nat == NO_NATION) {
