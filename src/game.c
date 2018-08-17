@@ -162,7 +162,7 @@ void delete_orders(rangelist_t ranges)
     }
 
     size_t n = orders_n_tot();
-    for (i = 0; i <= n; i++) {
+    for (i = 0; i <= len; i++) {
         if (indices[i] > n) {
             delete_error(indices[i]);
             return;
