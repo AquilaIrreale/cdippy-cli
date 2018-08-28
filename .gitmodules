@@ -1,0 +1,3 @@
+[submodule "cdippy"]
+	path = cdippy
+	url = https://github.com/AquilaIrreale/cdippy.git
