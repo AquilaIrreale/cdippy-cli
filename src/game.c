@@ -29,17 +29,18 @@ do {                                   \
     }                                  \
 } while (0)
 
-static enum nation cur_nat = NO_NATION;
+static enum cd_nation cur_nat = NO_NATION;
 
 static size_t orders_n[NATIONS_N];
 static struct order orders[NATIONS_N][TERR_N];
 
-size_t get_orders_base_index(enum nation nat)
+size_t get_orders_base_index(enum cd_nation nat)
 {
+    size_t nat_i = trail0s(nat);
     size_t ret = 1;
 
-    enum nation n;
-    for (n = 0; n < nat; n++) {
+    size_t n;
+    for (n = 0; n < nat_i; n++) {
         ret += orders_n[n];
     }
 
@@ -50,7 +51,7 @@ size_t orders_n_tot()
 {
     size_t ret = 0;
 
-    enum nation n;
+    enum cd_nation n;
     for (n = 0; n < NATIONS_N; n++) {
         ret += orders_n[n];
     }
@@ -81,7 +82,7 @@ void set_year()
     /* TODO */
 }
 
-void select_nation(enum nation nation)
+void select_nation(enum cd_nation nation)
 {
     cur_nat = nation;
 }
@@ -199,25 +200,27 @@ void delete_all_orders()
     }
 }
 
-void list_orders(enum nation nat)
+void list_orders(enum cd_nation nat)
 {
     if (nat == NO_NATION) {
         VALIDATE_CUR_NAT();
         nat = cur_nat;
     }
 
-    if (orders_n[nat] == 0) {
-        printf("No orders from %s\n", get_nation_name(nat));
+    size_t nat_i = trail0s(nat);
+
+    if (orders_n[nat_i] == 0) {
+        printf("No orders from %s\n", get_nation_name(nat_i));
         return;
     }
 
-    size_t base = get_orders_base_index(nat);
-    int w = (int)decimal_places(base + orders_n[nat]);
+    size_t base = get_orders_base_index(nat_i);
+    int w = (int)decimal_places(base + orders_n[nat_i]);
 
     size_t i;
-    for (i = 0; i < orders_n[nat]; i++) {
+    for (i = 0; i < orders_n[nat_i]; i++) {
         printf("%*zu: ", w, base + i);
-        print_order(orders[nat][i], true);
+        print_order(orders[nat_i][i], true);
     }
 }
 
@@ -227,7 +230,7 @@ void list_all_orders()
     size_t i = 1;
     int w = (int)decimal_places(orders_n_tot());
 
-    enum nation n;
+    enum cd_nation n;
     for (n = 0; n < NATIONS_N; n++) {
         if (orders_n[n] == 0) {
             continue;
@@ -258,11 +261,13 @@ void adjudicate()
     /* TODO */
 }
 
-size_t find_order(enum nation nat, enum terr terr)
+size_t find_order(enum cd_nation nat, enum cd_terr terr)
 {
+    size_t nat_i = trail0s(nat);
+
     size_t i;
-    for (i = 0; i < orders_n[nat]; i++) {
-        if (orders[nat][i].t1 == terr) {
+    for (i = 0; i < orders_n[nat_i]; i++) {
+        if (orders[nat_i][i].t1 == terr) {
             break;
         }
     }
@@ -270,24 +275,26 @@ size_t find_order(enum nation nat, enum terr terr)
     return i;
 }
 
-void register_order(enum nation nat,
+void register_order(enum cd_nation nat,
                     enum order_kind kind,
-                    enum terr t1,
-                    enum terr t2,
-                    enum terr t3,
-                    enum coast coast,
+                    enum cd_terr t1,
+                    enum cd_terr t2,
+                    enum cd_terr t3,
+                    enum cd_coast coast,
                     bool viac)
 {
+    size_t nat_i = trail0s(nat);
     size_t i = find_order(nat, t1);
-    orders[nat][i].kind  = kind;
-    orders[nat][i].t1    = t1;
-    orders[nat][i].t2    = t2;
-    orders[nat][i].t3    = t3;
-    orders[nat][i].coast = coast;
-    orders[nat][i].viac  = viac;
 
-    if (i >= orders_n[nat]) {
-        orders_n[nat]++;
+    orders[nat_i][i].kind  = kind;
+    orders[nat_i][i].t1    = t1;
+    orders[nat_i][i].t2    = t2;
+    orders[nat_i][i].t3    = t3;
+    orders[nat_i][i].coast = coast;
+    orders[nat_i][i].viac  = viac;
+
+    if (i >= orders_n[nat_i]) {
+        orders_n[nat_i]++;
     }
 }
 
@@ -302,14 +309,14 @@ void order_hold(terrlist_t tlist)
     }
 }
 
-void order_move(enum terr t2, struct terr_coast t3c, bool viac)
+void order_move(enum cd_terr t2, struct terr_coast t3c, bool viac)
 {
     VALIDATE_CUR_NAT();
 
     register_order(cur_nat, MOVE, t2, t2, t3c.terr, t3c.coast, viac);
 }
 
-void order_suph(terrlist_t tlist, enum terr t2)
+void order_suph(terrlist_t tlist, enum cd_terr t2)
 {
     VALIDATE_CUR_NAT();
 
@@ -320,7 +327,7 @@ void order_suph(terrlist_t tlist, enum terr t2)
     }
 }
 
-void order_supm(terrlist_t tlist, enum terr t2, enum terr t3)
+void order_supm(terrlist_t tlist, enum cd_terr t2, enum cd_terr t3)
 {
     VALIDATE_CUR_NAT();
 
@@ -330,7 +337,7 @@ void order_supm(terrlist_t tlist, enum terr t2, enum terr t3)
     }
 }
 
-void order_conv(terrlist_t tlist, enum terr t2, enum terr t3)
+void order_conv(terrlist_t tlist, enum cd_terr t2, enum cd_terr t3)
 {
     VALIDATE_CUR_NAT();
 

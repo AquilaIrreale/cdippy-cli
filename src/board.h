@@ -20,61 +20,22 @@
 #ifndef _BOARD_H_
 #define _BOARD_H_
 
+#include <cdippy.h>
+
 #include "list.h"
 
-enum nation {
-    NO_NATION = -1,
-    AUSTRIA,
-    ENGLAND,
-    FRANCE,
-    GERMANY,
-    ITALY,
-    RUSSIA,
-    TURKEY,
-    NATIONS_N
-};
-
-enum unit {
-    ARMY,
-    FLEET
-};
-
-enum coast {
-    NO_COAST,
-    NORTH,
-    SOUTH
-};
-
-enum terr {
-    NO_TERR = -1,
-    ADR, AEG, ALB, ANK, APU, ARM,
-    BAL, BAR, BEL, BER, BLA, BOH,
-    BOT, BRE, BUD, BUL, BUR, CLY,
-    CON, DEN, EAS, EDI, ENG, FIN,
-    GAL, GAS, GRE, HEL, HOL, ION,
-    IRI, KIE, LON, LVN, LVP, LYO,
-    MAO, MAR, MOS, MUN, NAF, NAO,
-    NAP, NTH, NWG, NWY, PAR, PIC,
-    PIE, POR, PRU, ROM, RUH, RUM,
-    SER, SEV, SIL, SKA, SMY, SPA,
-    STP, SWE, SYR, TRI, TUN, TUS,
-    TYR, TYS, UKR, VEN, VIE, WAL,
-    WAR, WES, YOR,
-    TERR_N
-};
-
 struct terr_coast {
-    enum terr terr;
-    enum coast coast;
+    enum cd_terr terr;
+    enum cd_coast coast;
 };
 
-DEFINE_LIST(terr, enum terr);
+DEFINE_LIST(terr, enum cd_terr);
 DEFINE_LIST(tc, struct terr_coast);
 
 struct terr_info {
-    enum unit unit;
-    enum coast coast;
-    enum nation nation;
+    enum cd_unit unit;
+    enum cd_coast coast;
+    enum cd_nation nation;
 };
 
 struct terr_info board[TERR_N];
@@ -82,14 +43,14 @@ struct terr_info board[TERR_N];
 void print_board();
 
 int get_terr(const char *name);
-int get_nation(const char *name);
+unsigned get_nation(const char *name);
 
-const char *get_terr_name(enum terr terr);
-const char *get_coast_name(enum coast coast);
-const char *get_nation_name(enum nation nation);
+const char *get_terr_name(enum cd_terr terr);
+const char *get_coast_name(enum cd_coast coast);
+const char *get_nation_name(enum cd_nation nation);
 
 void board_init();
-void set_terrs(tclist_t tclist, enum unit unit, enum nation nation);
+void set_terrs(tclist_t tclist, enum cd_unit unit, enum cd_nation nation);
 void clear_terrs(tclist_t tclist);
 void clear_all_terrs();
 

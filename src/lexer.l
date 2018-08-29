@@ -90,26 +90,27 @@ AD|A\.D\.|CE|C\.E\. {
 }
 
 [a-z_][a-z0-9_]* {
-    int ret = get_nation(yytext);
-    if (ret != NO_NATION) {
-        yylval.i = ret;
+    unsigned retu = get_nation(yytext);
+    if (retu != NO_NATION) {
+        yylval.u = retu;
         return NATION;
     }
 
-    ret = get_terr(yytext);
-    if (ret != NO_TERR) {
-        yylval.i = ret;
+    int reti;
+    reti = get_terr(yytext);
+    if (reti != NO_TERR) {
+        yylval.i = reti;
         return TERR;
     }
 
-    ret = recognize_keyword(yytext);
+    reti = recognize_keyword(yytext);
 
-    if (ret == UNRECOGNIZED) {
+    if (reti == UNRECOGNIZED) {
         yylval.s = malloc(sizeof(yytext) + 1);
         strcpy(yylval.s, yytext);
     }
 
-    return ret;
+    return reti;
 }
 
 .|\n { return *yytext; }

@@ -41,10 +41,10 @@ enum order_kind {
 
 struct order {
     enum order_kind kind;
-    enum terr t1;
-    enum terr t2;
-    enum terr t3;
-    enum coast coast;
+    enum cd_terr t1;
+    enum cd_terr t2;
+    enum cd_terr t3;
+    enum cd_coast coast;
     bool viac;
 };
 
@@ -56,14 +56,14 @@ void set_year();
 void select_nation();
 
 void order_hold(terrlist_t tlist);
-void order_move(enum terr t2, struct terr_coast t3c, bool viac);
-void order_suph(terrlist_t tlist, enum terr t2);
-void order_supm(terrlist_t tlist, enum terr t2, enum terr t3);
-void order_conv(terrlist_t tlist, enum terr t2, enum terr t3);
+void order_move(enum cd_terr t2, struct terr_coast t3c, bool viac);
+void order_suph(terrlist_t tlist, enum cd_terr t2);
+void order_supm(terrlist_t tlist, enum cd_terr t2, enum cd_terr t3);
+void order_conv(terrlist_t tlist, enum cd_terr t2, enum cd_terr t3);
 
 void delete_orders(rangelist_t ranges);
 void delete_all_orders();
-void list_orders(enum nation nat);
+void list_orders(enum cd_nation nat);
 void list_all_orders();
 void adjudicate();
 

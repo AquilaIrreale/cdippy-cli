@@ -22,10 +22,29 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <limits.h>
 
 #include "list.h"
 
 #define ARRSIZE(a) (sizeof (a) / sizeof (a)[0])
+
+#define IS_POW2(n) ((n) > 0 && !((n) & ((n)-1)))
+
+static inline size_t trail0s(size_t n)
+{
+    if (n == 0) {
+        return CHAR_BIT * sizeof(n);
+    }
+
+    n = (n ^ (n-1)) >> 1;
+
+    size_t c;
+    for (c = 0; n > 0; c++) {
+        n >>= 1;
+    }
+
+    return c;
+}
 
 #define SWAP(type, a, b) \
 do {                     \

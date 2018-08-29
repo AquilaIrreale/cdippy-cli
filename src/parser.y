@@ -68,7 +68,7 @@ void range_error(unsigned a, unsigned b);
 %token VIA
 %token YEAR
 
-%token <i> NATION
+%token <u> NATION
 %token <i> TERR
 %token <i> COAST
 %token <i> UNIT
