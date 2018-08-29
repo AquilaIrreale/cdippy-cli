@@ -36,6 +36,7 @@ void yyerror(const char *s);
 int yywrap();
 int yylex();
 
+void year_error();
 void range_error(unsigned a, unsigned b);
 
 %}
@@ -80,6 +81,7 @@ void range_error(unsigned a, unsigned b);
 %token <s> UNRECOGNIZED
 
 %type <i> era
+%type <u> year
 
 %type <tc> terr_coast
 %type <tclist> tclist
@@ -109,14 +111,14 @@ command: set
        | delete
        | clear
        | list
-       | NATION { select_nation($1); }
+       | NATION { cur_nat = $1; }
        | STATE  { print_board(); }
        | RESET  { board_init(); }
        | RUN    { adjudicate(); }
 
 set: SET tclist UNIT NATION { set_terrs($2, $3, $4); tclist_free($2); }
-   | SET YEAR NUM era       { set_year($3 * $4); }
-   | SET PHASE SEASON       { set_phase($3); }
+   | SET YEAR year era      { year = ((int)$3) * $4; }
+   | SET PHASE SEASON       { season = $3; }
 
 clear: CLEAR tclist { clear_terrs($2); tclist_free($2); }
      | CLEAR ALL    { clear_all_terrs(); }
@@ -130,6 +132,8 @@ tclist: terr_coast        { $$ = tclist_cons($1); }
 
 terr_coast: TERR COAST { $$.terr = $1; $$.coast = $2; }
           | TERR       { $$.terr = $1; $$.coast = NO_COAST; }
+
+year: NUM { if ($1 == 0) { year_error(); YYERROR; } }
 
 era: ERA
    | /* Default */ { $$ = AD; }
@@ -206,10 +210,12 @@ const char *tokenstr(int token)
     case TERR:
         return get_terr_name(yylval.i);
 
+    case SEASON:
+        return get_season_name(yylval.i);
+
     case COAST:
     case UNIT:
     case ERA:
-    case SEASON:
         break; /* TODO */
     }
 
@@ -245,6 +251,11 @@ void yyerror(const char *s)
     } else {
         fprintf(stderr, "%s: unexpected token `%s'\n", s, tokenstr(yychar));
     }
+}
+
+void year_error()
+{
+    fputs("syntax error: 0 is not a valid year\n", stderr);
 }
 
 void range_error(unsigned a, unsigned b)

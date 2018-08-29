@@ -20,15 +20,30 @@
 #ifndef _GAME_H_
 #define _GAME_H_
 
+#include <cdippy.h>
+
 #include "commons.h"
 #include "board.h"
 
 #define GOAL 18
 
+extern enum cd_nation cur_nat;
+
 enum era {
     BC = -1,
     AD = 1
 };
+
+enum season {
+    SPRING,
+    AUTUMN
+};
+
+extern int year;
+extern enum season season;
+
+int get_season(const char *name);
+const char *get_season_name(enum season season);
 
 enum order_kind {
     NULL_ORDER,
@@ -51,7 +66,6 @@ struct order {
 void game_init();
 void phase_init();
 
-void set_phase();
 void set_year();
 void select_nation();
 

@@ -103,6 +103,12 @@ AD|A\.D\.|CE|C\.E\. {
         return TERR;
     }
 
+    reti = get_season(yytext);
+    if (reti >= 0) {
+        yylval.i = reti;
+        return SEASON;
+    }
+
     reti = recognize_keyword(yytext);
 
     if (reti == UNRECOGNIZED) {

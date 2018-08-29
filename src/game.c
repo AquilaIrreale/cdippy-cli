@@ -29,7 +29,7 @@ do {                                   \
     }                                  \
 } while (0)
 
-static enum cd_nation cur_nat = NO_NATION;
+enum cd_nation cur_nat = NO_NATION;
 
 static size_t orders_n[NATIONS_N];
 static struct order orders[NATIONS_N][TERR_N];
@@ -72,19 +72,48 @@ void phase_init()
     }
 }
 
-void set_phase()
+int year = 1901;
+enum season season = SPRING;
+
+void advance_phase()
 {
-    /* TODO */
+    if (season == SPRING) {
+        season = AUTUMN;
+    } else {
+        year++;
+
+        if (year == 0) {
+            year = 1;
+        }
+
+        season = SPRING;
+    }
 }
 
-void set_year()
+int get_season(const char *name)
 {
-    /* TODO */
+    if (istrcmp(name, "spring") == 0) {
+        return SPRING;
+    } else if (istrcmp(name, "autumn") == 0
+               || istrcmp(name, "fall") == 0) {
+        return AUTUMN;
+    } else {
+        return -1;
+    }
 }
 
-void select_nation(enum cd_nation nation)
+const char *get_season_name(enum season season)
 {
-    cur_nat = nation;
+    switch (season) {
+    case SPRING:
+        return "Spring";
+
+    case AUTUMN:
+        return "Autumn";
+
+    default:
+        return "!INVALID SEASON!";
+    }
 }
 
 void print_order(struct order o, bool newline)
