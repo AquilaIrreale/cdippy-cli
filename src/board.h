@@ -35,10 +35,13 @@ DEFINE_LIST(tc, struct terr_coast);
 struct terr_info {
     enum cd_unit unit;
     enum cd_coast coast;
-    enum cd_nation nation;
+    enum cd_nation occupier;
+
+    bool supp_center;
+    enum cd_nation owner;
 };
 
-struct terr_info board[TERR_N];
+extern struct terr_info board[TERR_N];
 
 void print_board();
 
@@ -50,6 +53,7 @@ const char *get_coast_name(enum cd_coast coast);
 const char *get_nation_name(enum cd_nation nation);
 
 void board_init();
+void board_reset();
 void set_terrs(tclist_t tclist, enum cd_unit unit, enum cd_nation nation);
 void clear_terrs(tclist_t tclist);
 void clear_all_terrs();

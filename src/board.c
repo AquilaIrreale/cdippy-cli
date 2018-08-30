@@ -22,6 +22,8 @@
 #include "board.h"
 #include "commons.h"
 
+struct terr_info board[TERR_N];
+
 int istrcmp_wrapper(const void *a, const void *b)
 {
     return istrcmp(a, *(char **)b);
@@ -91,7 +93,78 @@ void print_board()
 
 void board_init()
 {
-    /* TODO */
+    enum cd_terr centers[] = {
+        ANK, BEL, BER, BRE, BUD, BUL, CON,
+        DEN, EDI, GRE, HOL, KIE, LON, LVP,
+        MAR, MOS, MUN, NAP, NWY, PAR, POR,
+        ROM, RUM, SER, SEV, SMY, SPA, STP,
+        SWE, TRI, TUN, VEN, VIE, WAR
+    };
+
+    size_t i;
+    for (i = 0; i < ARRSIZE(centers); i++) {
+        board[centers[i]].supp_center = true;
+    }
+
+    board_reset();
+}
+
+void board_reset()
+{
+    struct {
+        enum cd_nation nat;
+        enum cd_terr terrs[5];
+        enum cd_unit units[4];
+    } nations[] = {
+        {
+            AUSTRIA,
+            {BUD, TRI, VIE, NO_TERR},
+            {ARMY, FLEET, ARMY}
+        }, {
+            ENGLAND,
+            {EDI, LON, LVP, NO_TERR},
+            {FLEET, FLEET, ARMY}
+        }, {
+            FRANCE,
+            {BRE, MAR, PAR, NO_TERR},
+            {FLEET, ARMY, ARMY}
+        }, {
+            GERMANY,
+            {BER, MUN, KIE, NO_TERR},
+            {ARMY, ARMY, FLEET}
+        }, {
+            ITALY,
+            {NAP, ROM, VEN, NO_TERR},
+            {FLEET, ARMY, ARMY}
+        }, {
+            RUSSIA,
+            {MOS, SEV, STP, WAR, NO_TERR},
+            {ARMY, FLEET, FLEET, ARMY}
+        }, {
+            TURKEY,
+            {ANK, CON, SMY, NO_TERR},
+            {FLEET, ARMY, ARMY}
+        }
+    };
+
+    enum cd_terr t;
+    for (t = 0; t < TERR_N; t++) {
+        board[t].occupier = NO_NATION;
+        board[t].owner = NO_NATION;
+    }
+
+    size_t i;
+    for (i = 0; i < ARRSIZE(nations); i++) {
+        size_t j;
+        for (j = 0; nations[i].terrs[j] != NO_TERR; j++) {
+            board[nations[i].terrs[j]].occupier = nations[i].nat;
+            board[nations[i].terrs[j]].owner = nations[i].nat;
+            board[nations[i].terrs[j]].unit = nations[i].units[j];
+            board[nations[i].terrs[j]].coast = NO_COAST;
+        }
+    }
+
+    board[STP].coast = SOUTH;
 }
 
 void set_terrs(tclist_t tclist, enum cd_unit unit, enum cd_nation nation)

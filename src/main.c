@@ -63,7 +63,10 @@ int main()
     using_history();
     load_history();
     atexit(save_history);
+
+    board_init();
     game_init();
+
     yyparse();
 
     return 0;
