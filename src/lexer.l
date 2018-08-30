@@ -184,6 +184,7 @@ int recognize_keyword(char *yytext)
         int code;
     } keywords[] = {
         {"all",    ALL},
+        {"board",  BOARD},
         {"by",     BY},
         {"c",      C},
         {"clear",  CLEAR},
@@ -195,7 +196,6 @@ int recognize_keyword(char *yytext)
         {"run",    RUN},
         {"s",      S},
         {"set",    SET},
-        {"state",  STATE},
         {"via",    VIA},
         {"year",   YEAR},
     };

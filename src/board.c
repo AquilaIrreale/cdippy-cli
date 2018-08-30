@@ -86,9 +86,42 @@ const char *get_coast_name(enum cd_coast coast)
     }
 }
 
+const char *get_unit_name(enum cd_unit unit)
+{
+    if (unit == ARMY) {
+        return "A";
+    } else {
+        return "F";
+    }
+}
+
 void print_board()
 {
-    /* TODO */
+    enum cd_terr t;
+    for (t = 0; t < TERR_N; t++) {
+        struct terr_info *ti = &board[t];
+        if (!ti->supp_center && !ti->occupier) {
+            continue;
+        }
+
+        printf("%s: ", get_terr_name(t));
+
+        if (!ti->occupier) {
+            fputs("Not occupied", stdout);
+        } else {
+            printf("%s%s %s", get_unit_name(ti->unit),
+                              get_coast_name(ti->coast),
+                              get_nation_name(ti->occupier));
+        }
+
+        if (ti->supp_center) {
+            pprintf(" (%s)", ti->owner != NO_NATION
+                           ? get_nation_name(ti->owner)
+                           : "independent");
+        }
+
+        putchar('\n');
+    }
 }
 
 void board_init()

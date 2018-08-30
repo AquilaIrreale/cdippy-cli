@@ -51,6 +51,7 @@ unsigned get_nation(const char *name);
 const char *get_terr_name(enum cd_terr terr);
 const char *get_coast_name(enum cd_coast coast);
 const char *get_nation_name(enum cd_nation nation);
+const char *get_unit_name(enum cd_unit unit);
 
 void board_init();
 void board_reset();

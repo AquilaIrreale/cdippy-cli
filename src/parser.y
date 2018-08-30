@@ -54,6 +54,7 @@ void range_error(unsigned a, unsigned b);
 }
 
 %token ALL
+%token BOARD
 %token BY
 %token C
 %token CLEAR
@@ -65,7 +66,6 @@ void range_error(unsigned a, unsigned b);
 %token RUN
 %token S
 %token SET
-%token STATE
 %token VIA
 %token YEAR
 
@@ -112,7 +112,7 @@ command: set
        | clear
        | list
        | NATION { cur_nat = $1; }
-       | STATE  { print_board(); }
+       | BOARD  { print_board(); }
        | RESET  { board_init(); }
        | RUN    { adjudicate(); }
 
@@ -180,6 +180,7 @@ const char *tokenstr(int token)
         const char *name;
     } keywords[] = {
         {ALL,    "all"},
+        {BOARD,  "board"},
         {BY,     "by"},
         {C,      "c"},
         {CLEAR,  "clear"},
@@ -191,7 +192,6 @@ const char *tokenstr(int token)
         {RUN,    "run"},
         {S,      "s"},
         {SET,    "set"},
-        {STATE,  "state"},
         {VIA,    "via"},
         {YEAR,   "year"},
     };
