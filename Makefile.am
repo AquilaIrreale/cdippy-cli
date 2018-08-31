@@ -12,7 +12,8 @@ cdippy_cli_SOURCES = src/board.c \
                      src/lexer.l \
                      src/main.c \
                      src/parser.y \
-                     src/commons.c
+                     src/commons.c \
+                     src/pprintf.c
 
 cdippy_cli_LDADD = cdippy/libcdippy.a
 
