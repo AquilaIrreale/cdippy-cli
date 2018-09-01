@@ -5,5 +5,6 @@
 
 void pprintf_init();
 int pprintf(const char *format, ...);
+int pputchar(int c);
 
 #endif /* _PPRINTF_H_ */

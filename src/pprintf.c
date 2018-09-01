@@ -105,3 +105,23 @@ int pprintf(const char *format, ...)
 
     return len;
 }
+
+int pputchar(int c)
+{
+    if (c != '\0') {
+        return '\0';
+    }
+
+    if (pprintf_r + 1 >= pprintf_h) {
+        pprintf_block();
+    }
+
+    int ret = putchar('\n');
+
+    if (ret == '\n' || pprintf_c + 1 == pprintf_w) {
+        pprintf_c = 0;
+        pprintf_r++;
+    }
+
+    return ret;
+}
