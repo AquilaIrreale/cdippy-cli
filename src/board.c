@@ -21,6 +21,7 @@
 
 #include "board.h"
 #include "commons.h"
+#include "pprintf.h"
 
 struct terr_info board[TERR_N];
 
@@ -97,6 +98,8 @@ const char *get_unit_name(enum cd_unit unit)
 
 void print_board()
 {
+    pprintf_init();
+
     enum cd_terr t;
     for (t = 0; t < TERR_N; t++) {
         struct terr_info *ti = &board[t];
@@ -104,14 +107,14 @@ void print_board()
             continue;
         }
 
-        printf("%s: ", get_terr_name(t));
+        pprintf("%s: ", get_terr_name(t));
 
         if (!ti->occupier) {
-            fputs("Not occupied", stdout);
+            pprintf("Not occupied");
         } else {
-            printf("%s%s %s", get_unit_name(ti->unit),
-                              get_coast_name(ti->coast),
-                              get_nation_name(ti->occupier));
+            pprintf("%s%s %s", get_unit_name(ti->unit),
+                               get_coast_name(ti->coast),
+                               get_nation_name(ti->occupier));
         }
 
         if (ti->supp_center) {
@@ -120,7 +123,7 @@ void print_board()
                            : "independent");
         }
 
-        putchar('\n');
+        pputchar('\n');
     }
 }
 

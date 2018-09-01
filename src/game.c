@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 
+#include "pprintf.h"
 #include "game.h"
 
 #define VALIDATE_CUR_NAT()             \
@@ -116,44 +117,44 @@ const char *get_season_name(enum season season)
     }
 }
 
-void print_order(struct order o, bool newline)
+void pprint_order(struct order o, bool newline)
 {
     switch (o.kind) {
     case HOLD:
-        printf("%s H", get_terr_name(o.t1));
+        pprintf("%s H", get_terr_name(o.t1));
         break;
 
     case MOVE:
-        printf("%s-%s%s%s", get_terr_name(o.t2),
-                            get_terr_name(o.t3),
-                            get_coast_name(o.coast),
-                            o.viac ? " VIA C" : "");
+        pprintf("%s-%s%s%s", get_terr_name(o.t2),
+                             get_terr_name(o.t3),
+                             get_coast_name(o.coast),
+                             o.viac ? " VIA C" : "");
         break;
 
     case SUPH:
-        printf("%s S %s", get_terr_name(o.t1),
-                          get_terr_name(o.t2));
+        pprintf("%s S %s", get_terr_name(o.t1),
+                           get_terr_name(o.t2));
         break;
 
     case SUPM:
-        printf("%s S %s-%s", get_terr_name(o.t1),
-                             get_terr_name(o.t2),
-                             get_terr_name(o.t3));
+        pprintf("%s S %s-%s", get_terr_name(o.t1),
+                              get_terr_name(o.t2),
+                              get_terr_name(o.t3));
         break;
 
     case CONV:
-        printf("%s C %s-%s", get_terr_name(o.t1),
-                             get_terr_name(o.t2),
-                             get_terr_name(o.t3));
+        pprintf("%s C %s-%s", get_terr_name(o.t1),
+                              get_terr_name(o.t2),
+                              get_terr_name(o.t3));
         break;
 
     default:
-        fputs("!INVALID ORDER!", stdout);
+        pprintf("!INVALID ORDER!");
         break;
     }
 
     if (newline) {
-        putchar('\n');
+        pputchar('\n');
     }
 }
 
@@ -231,6 +232,8 @@ void delete_all_orders()
 
 void list_orders(enum cd_nation nat)
 {
+    pprintf_init();
+
     if (nat == NO_NATION) {
         VALIDATE_CUR_NAT();
         nat = cur_nat;
@@ -239,7 +242,7 @@ void list_orders(enum cd_nation nat)
     size_t nat_i = trail0s(nat);
 
     if (orders_n[nat_i] == 0) {
-        printf("No orders from %s\n", get_nation_name(nat_i));
+        pprintf("No orders from %s\n", get_nation_name(nat_i));
         return;
     }
 
@@ -248,13 +251,15 @@ void list_orders(enum cd_nation nat)
 
     size_t i;
     for (i = 0; i < orders_n[nat_i]; i++) {
-        printf("%*zu: ", w, base + i);
-        print_order(orders[nat_i][i], true);
+        pprintf("%*zu: ", w, base + i);
+        pprint_order(orders[nat_i][i], true);
     }
 }
 
 void list_all_orders()
 {
+    pprintf_init();
+
     bool any = false;
     size_t i = 1;
     int w = (int)decimal_places(orders_n_tot());
@@ -265,23 +270,23 @@ void list_all_orders()
             continue;
         }
 
-        putchar('\n');
+        pputchar('\n');
 
         any = true;
 
-        puts(get_nation_name(n));
+        pprintf("%s", get_nation_name(n));
 
         size_t j;
         for (j = 0; j < orders_n[n]; j++) {
-            printf("%*zu: ", w, i++);
-            print_order(orders[n][j], true);
+            pprintf("%*zu: ", w, i++);
+            pprint_order(orders[n][j], true);
         }
     }
 
     if (!any) {
-        puts("No orders");
+        pprintf("No orders\n");
     } else {
-        putchar('\n');
+        pputchar('\n');
     }
 }
 
