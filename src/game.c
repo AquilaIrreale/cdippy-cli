@@ -264,7 +264,7 @@ void list_all_orders()
     size_t i = 1;
     int w = (int)decimal_places(orders_n_tot());
 
-    enum cd_nation n;
+    size_t n;
     for (n = 0; n < NATIONS_N; n++) {
         if (orders_n[n] == 0) {
             continue;
@@ -274,7 +274,7 @@ void list_all_orders()
 
         any = true;
 
-        pprintf("%s", get_nation_name(n));
+        pprintf("%s", cd_nation_names[n]);
 
         size_t j;
         for (j = 0; j < orders_n[n]; j++) {
