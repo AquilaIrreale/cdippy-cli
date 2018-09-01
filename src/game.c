@@ -274,7 +274,7 @@ void list_all_orders()
 
         any = true;
 
-        pprintf("%s", cd_nation_names[n]);
+        pprintf("%s\n", cd_nation_names[n]);
 
         size_t j;
         for (j = 0; j < orders_n[n]; j++) {

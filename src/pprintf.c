@@ -108,7 +108,7 @@ int pprintf(const char *format, ...)
 
 int pputchar(int c)
 {
-    if (c != '\0') {
+    if (c == '\0') {
         return '\0';
     }
 
