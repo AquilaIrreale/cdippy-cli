@@ -205,18 +205,49 @@ void board_reset()
 
 void set_terrs(tclist_t tclist, enum cd_unit unit, enum cd_nation nation)
 {
-    while (tclist != NULL) {
-        printf("%s %s\n", get_terr_name(tclist->item.terr), get_coast_name(tclist->item.coast));
-        LIST_ADVANCE(tclist);
+    pprintf_init();
+
+    for (; tclist != NULL; LIST_ADVANCE(tclist)) {
+        enum cd_terr t = tclist->item.terr;
+        enum cd_coast coast = tclist->item.coast;
+
+        int err = cd_register_unit(t, coast, unit, nation);
+        if (err) {
+            /* TODO: rewrite errors */
+            const char *errors[] = {
+                NULL,
+                "CD_INVALID_TERR",
+                "CD_SINGLE_COAST",
+                "CD_COAST_NEEDED",
+                "CD_COAST_FOR_ARMY",
+                "CD_ARMY_IN_SEA",
+                "CD_FLEET_ON_LAND"
+            };
+
+            pprintf("%s\n", errors[err]);
+            continue;
+        }
+
+        board[t].occupier = nation;
+        board[t].unit = unit;
+        board[t].coast = coast;
     }
 }
 
-void clear_terrs(tclist_t tclist)
+void clear_terrs(terrlist_t tlist)
 {
-    /* TODO */
+    while (tlist != NULL) {
+        board[tlist->item].occupier = NO_NATION;
+        cd_clear_unit(tlist->item);
+        LIST_ADVANCE(tlist);
+    }
 }
 
 void clear_all_terrs()
 {
-    /* TODO */
+    enum cd_terr t;
+    for (t = 0; t < TERR_N; t++) {
+        board[t].occupier = NO_NATION;
+        cd_clear_unit(t);
+    }
 }

@@ -120,8 +120,8 @@ set: SET tclist UNIT NATION { set_terrs($2, $3, $4); tclist_free($2); }
    | SET YEAR year era      { year = ((int)$3) * $4; }
    | SET PHASE SEASON       { season = $3; }
 
-clear: CLEAR tclist { clear_terrs($2); tclist_free($2); }
-     | CLEAR ALL    { clear_all_terrs(); }
+clear: CLEAR tlist { clear_terrs($2); terrlist_free($2); }
+     | CLEAR ALL   { clear_all_terrs(); }
 
 list: LIST NATION { list_orders($2); }
     | LIST ALL    { list_all_orders(); }
