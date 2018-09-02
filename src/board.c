@@ -18,6 +18,7 @@
  */
 
 #include <stdio.h>
+#include <assert.h>
 
 #include "board.h"
 #include "commons.h"
@@ -213,18 +214,23 @@ void set_terrs(tclist_t tclist, enum cd_unit unit, enum cd_nation nation)
 
         int err = cd_register_unit(t, coast, unit, nation);
         if (err) {
-            /* TODO: rewrite errors */
+            assert(err != CD_INVALID_TERR);
+
             const char *errors[] = {
                 NULL,
-                "CD_INVALID_TERR",
-                "CD_SINGLE_COAST",
-                "CD_COAST_NEEDED",
-                "CD_COAST_FOR_ARMY",
-                "CD_ARMY_IN_SEA",
-                "CD_FLEET_ON_LAND"
+                NULL,
+                "coast specified for single-coast territory",
+                "you have to specify a coast",
+                "coast specified but unit is an army",
+                "cannot place an army in sea",
+                "cannot place a fleet on land"
             };
 
-            pprintf("%s\n", errors[err]);
+            pprintf("%s: %s\n",
+                    get_terr_name(t),
+                    get_coast_name(coast),
+                    errors[err]);
+
             continue;
         }
 
