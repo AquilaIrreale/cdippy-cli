@@ -188,12 +188,19 @@ void board_reset()
     for (t = 0; t < TERR_N; t++) {
         board[t].occupier = NO_NATION;
         board[t].owner = NO_NATION;
+
+        cd_clear_unit(t);
     }
 
     size_t i;
     for (i = 0; i < ARRSIZE(nations); i++) {
         size_t j;
         for (j = 0; nations[i].terrs[j] != NO_TERR; j++) {
+            cd_register_unit(nations[i].terrs[j],
+                             nations[i].terrs[j] != STP ? NO_COAST : SOUTH,
+                             nations[i].units[j],
+                             nations[i].nat);
+
             board[nations[i].terrs[j]].occupier = nations[i].nat;
             board[nations[i].terrs[j]].owner = nations[i].nat;
             board[nations[i].terrs[j]].unit = nations[i].units[j];
