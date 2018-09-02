@@ -209,7 +209,7 @@ const char *tokenstr(int token)
 
     switch (token) {
     case NATION:
-        return get_nation_name(yylval.i);
+        return get_nation_name(yylval.u);
 
     case TERR:
         return get_terr_name(yylval.i);
@@ -218,9 +218,13 @@ const char *tokenstr(int token)
         return get_season_name(yylval.i);
 
     case COAST:
+        return get_coast_name(yylval.i);
+
     case UNIT:
+        return get_unit_name(yylval.i);
+
     case ERA:
-        break; /* TODO */
+        return get_era_name(yylval.i);
     }
 
     return "?!";

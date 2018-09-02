@@ -117,6 +117,20 @@ const char *get_season_name(enum season season)
     }
 }
 
+const char *get_era_name(enum era era)
+{
+    switch (era) {
+    case AD:
+        return "AD";
+
+    case BC:
+        return "BC";
+
+    default:
+        return "!INVALID ERA!";
+    }
+}
+
 void pprint_order(struct order o, bool newline)
 {
     switch (o.kind) {

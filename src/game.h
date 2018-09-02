@@ -43,6 +43,8 @@ extern int year;
 extern enum season season;
 
 int get_season(const char *name);
+
+const char *get_era_name(enum era era);
 const char *get_season_name(enum season season);
 
 enum order_kind {
