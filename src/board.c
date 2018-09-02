@@ -234,6 +234,21 @@ void set_terrs(tclist_t tclist, enum cd_unit unit, enum cd_nation nation)
     }
 }
 
+void set_centers(terrlist_t tlist, enum cd_nation nation)
+{
+    pprintf_init();
+
+    while (tlist != NULL) {
+        if (board[tlist->item].supp_center) {
+            board[tlist->item].owner = nation;
+        } else {
+            pprintf("%s: not a supply center\n", tlist->item);
+        }
+
+        LIST_ADVANCE(tlist);
+    }
+}
+
 void clear_terrs(terrlist_t tlist)
 {
     while (tlist != NULL) {
@@ -243,11 +258,28 @@ void clear_terrs(terrlist_t tlist)
     }
 }
 
-void clear_all_terrs()
+void clear_centers(terrlist_t tlist)
+{
+    pprintf_init();
+
+    while (tlist != NULL) {
+        if (board[tlist->item].supp_center) {
+            board[tlist->item].owner = NO_NATION;
+        } else {
+            pprintf("%s: not a supply center\n", tlist->item);
+        }
+
+        LIST_ADVANCE(tlist);
+    }
+}
+
+void clear_all()
 {
     enum cd_terr t;
     for (t = 0; t < TERR_N; t++) {
         board[t].occupier = NO_NATION;
+        board[t].owner = NO_NATION;
+
         cd_clear_unit(t);
     }
 }

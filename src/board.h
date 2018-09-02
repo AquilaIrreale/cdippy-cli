@@ -56,7 +56,9 @@ const char *get_unit_name(enum cd_unit unit);
 void board_init();
 void board_reset();
 void set_terrs(tclist_t tclist, enum cd_unit unit, enum cd_nation nation);
+void set_centers(terrlist_t tlist, enum cd_nation nation);
 void clear_terrs(terrlist_t tlist);
-void clear_all_terrs();
+void clear_centers(terrlist_t tlist);
+void clear_all();
 
 #endif /* _BOARD_H_ */

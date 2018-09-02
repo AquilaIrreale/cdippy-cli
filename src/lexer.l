@@ -190,6 +190,7 @@ int recognize_keyword(char *yytext)
         {"clear",  CLEAR},
         {"delete", DELETE},
         {"h",      H},
+        {"owner",  OWNER},
         {"list",   LIST},
         {"phase",  PHASE},
         {"reset",  RESET},

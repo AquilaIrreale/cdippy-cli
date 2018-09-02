@@ -61,6 +61,7 @@ void range_error(unsigned a, unsigned b);
 %token DELETE
 %token LIST
 %token H
+%token OWNER
 %token PHASE
 %token RESET
 %token RUN
@@ -117,11 +118,13 @@ command: set
        | RUN    { adjudicate(); }
 
 set: SET tclist UNIT NATION { set_terrs($2, $3, $4); tclist_free($2); }
+   | SET OWNER tlist NATION { set_centers($3, $4); terrlist_free($3); }
    | SET YEAR year era      { year = ((int)$3) * $4; }
    | SET PHASE SEASON       { season = $3; }
 
-clear: CLEAR tlist { clear_terrs($2); terrlist_free($2); }
-     | CLEAR ALL   { clear_all_terrs(); }
+clear: CLEAR tlist       { clear_terrs($2); terrlist_free($2); }
+     | CLEAR OWNER tlist { clear_centers($3); terrlist_free($3); }
+     | CLEAR ALL         { clear_all(); }
 
 list: LIST NATION { list_orders($2); }
     | LIST ALL    { list_all_orders(); }
@@ -186,6 +189,7 @@ const char *tokenstr(int token)
         {CLEAR,  "clear"},
         {DELETE, "delete"},
         {H,      "h"},
+        {OWNER,  "owner"},
         {LIST,   "list"},
         {PHASE,  "phase"},
         {RESET,  "reset"},
