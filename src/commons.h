@@ -46,6 +46,13 @@ static inline size_t trail0s(size_t n)
     return c;
 }
 
+static inline int sgn(int n)
+{
+    return n > 0 ?  1
+         : n < 0 ? -1
+         : 0;
+}
+
 #define SWAP(type, a, b) \
 do {                     \
     type _tmp = a;       \
