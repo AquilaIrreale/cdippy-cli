@@ -233,7 +233,7 @@ void set_terrs(tclist_t tclist, enum cd_unit unit, enum cd_nation nation)
                 "cannot place a fleet on land"
             };
 
-            pprintf("%s: %s\n",
+            pprintf("%s%s: %s\n",
                     get_terr_name(t),
                     get_coast_name(coast),
                     errors[err]);
