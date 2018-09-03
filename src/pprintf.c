@@ -37,7 +37,7 @@ static unsigned short pprintf_c;
 void pprintf_init()
 {
     struct winsize ws;
-    ioctl(STDIN_FILENO, TIOCGWINSZ, &ws);
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
 
     pprintf_h = ws.ws_row;
     pprintf_w = ws.ws_col;
