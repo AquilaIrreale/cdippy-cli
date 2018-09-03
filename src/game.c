@@ -18,7 +18,11 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
 
+#include "commons.h"
 #include "pprintf.h"
 #include "game.h"
 
@@ -30,10 +34,28 @@ do {                                   \
     }                                  \
 } while (0)
 
+int year = 1901;
+enum season season = SPRING;
+
+void print_date()
+{
+    enum era era = sgn(year);
+
+    printf("%d %s - %s\n", abs(year),
+                           get_era_name(era),
+                           get_season_name(season));
+}
+
 enum cd_nation cur_nat = NO_NATION;
 
 static size_t orders_n[NATIONS_N];
 static struct order orders[NATIONS_N][TERR_N];
+
+void reset_orders()
+{
+    cur_nat = NO_NATION;
+    memset(orders_n, 0, sizeof orders_n);
+}
 
 size_t get_orders_base_index(enum cd_nation nat)
 {
@@ -62,33 +84,8 @@ size_t orders_n_tot()
 
 void game_init()
 {
-    phase_init();
-}
-
-void phase_init()
-{
-    size_t i;
-    for (i = 0; i < NATIONS_N; i++) {
-        orders_n[i] = 0;
-    }
-}
-
-int year = 1901;
-enum season season = SPRING;
-
-void advance_phase()
-{
-    if (season == SPRING) {
-        season = AUTUMN;
-    } else {
-        year++;
-
-        if (year == 0) {
-            year = 1;
-        }
-
-        season = SPRING;
-    }
+    reset_orders();
+    print_date();
 }
 
 int get_season(const char *name)
@@ -304,9 +301,327 @@ void list_all_orders()
     }
 }
 
-void adjudicate()
+void update_centers()
 {
     /* TODO */
+}
+
+void update_units()
+{
+    /* TODO */
+}
+
+void advance_turn()
+{
+    if (season == SPRING) {
+        season = AUTUMN;
+    } else {
+        year++;
+
+        if (year == 0) {
+            year = 1;
+        }
+
+        season = SPRING;
+    }
+
+    if (season == SPRING) {
+        update_centers();
+        update_units();
+    }
+
+    print_date();
+}
+
+bool dislodged(enum cd_terr t)
+{
+    size_t i;
+    for (i = 0; i < cd_retreats_n; i++) {
+        if (cd_retreats[i].who == t) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+struct move {
+    enum cd_terr t1;
+    enum cd_terr t2;
+    enum cd_coast coast;
+    enum cd_unit unit;
+    enum cd_nation nation;
+};
+
+struct move successful_moves[TERR_N];
+size_t successful_moves_n = 0;
+
+void register_successful_move(struct order *o)
+{
+    size_t i;
+
+    #ifndef NDEBUG
+    for (i = 0; i < successful_moves_n; i++) {
+        assert(successful_moves[i].t1 != o->t1);
+    }
+    #endif
+
+    struct move *m = &successful_moves[successful_moves_n];
+
+    m->t1     = o->t1;
+    m->t2     = o->t3;
+    m->coast  = o->coast;
+    m->unit   = board[o->t1].unit;
+    m->nation = board[o->t1].occupier;
+
+    successful_moves_n++;
+}
+
+void execute_moves()
+{
+    size_t i;
+    for (i = 0; i < successful_moves_n; i++) {
+        struct move *m = &successful_moves[i];
+        board[m->t1].occupier = NO_NATION;
+    }
+
+    for (i = 0; i < successful_moves_n; i++) {
+        struct move *m = &successful_moves[i];
+        board[m->t2].occupier = m->nation;
+        board[m->t2].unit     = m->unit;
+        board[m->t2].coast    = m->coast;
+    }
+
+    successful_moves_n = 0;
+}
+
+enum game_state {
+    DEFAULT,
+    RETREAT
+};
+
+enum game_state state = DEFAULT;
+
+void adjudicate_orders()
+{
+    bool any = false;
+
+    size_t nat_i, i;
+    for (nat_i = 0; nat_i < NATIONS_N; nat_i++) {
+        for (i = 0; i < orders_n[nat_i]; i++) {
+            struct order *o = &orders[nat_i][i];
+
+            any = true;
+
+            if (board[o->t1].occupier != (1u << nat_i)) {
+                continue;
+            }
+
+            switch (o->kind) {
+            case MOVE:
+                cd_register_move(o->t2, o->t3, o->coast, o->viac);
+                break;
+
+            case SUPH:
+                cd_register_suph(o->t1, o->t2);
+                break;
+
+            case SUPM:
+                cd_register_supm(o->t1, o->t2, o->t3);
+                break;
+
+            case CONV:
+                cd_register_conv(o->t1, o->t2, o->t3);
+                break;
+
+            default:
+                break;
+            }
+        }
+    }
+
+    cd_run_adjudicator();
+
+    pprintf_init();
+    pputchar('\n');
+
+    size_t j = 0;
+
+    for (nat_i = 0; nat_i < NATIONS_N; nat_i++) {
+        if (orders_n[nat_i] == 0) {
+            continue;
+        }
+
+        pprintf("%s\n", get_nation_name(1u << nat_i));
+
+        for (i = 0; i < orders_n[nat_i]; i++) {
+            struct order *o = &orders[nat_i][i];
+            pprint_order(*o, false);
+
+            if (board[o->t1].occupier != (1u << nat_i)) {
+                pprintf(" [IGNORED]\n");
+                continue;
+            }
+
+            if (o->kind == HOLD) {
+                if (dislodged(o->t1)) {
+                    pprintf(" [FAILS]\n");
+                } else {
+                    pprintf(" [SUCCEEDS]\n");
+                }
+
+                continue;
+            }
+
+            if (cd_resolutions[j] == SUCCEEDS) {
+                pprintf(" [SUCCEEDS]\n");
+
+                if (o->kind == MOVE) {
+                    register_successful_move(o);
+                }
+            } else {
+                pprintf(" [FAILS]\n");
+            }
+
+            j++;
+        }
+
+        pputchar('\n');
+    }
+
+    if (!any) {
+        printf("No orders\n\n");
+    }
+
+    reset_orders();
+
+    if (cd_retreats_n > 0) {
+        pprintf("Units dislodged:");
+
+        for (i = 0; i < cd_retreats_n; i++) {
+            pprintf(" %s", get_terr_name(cd_retreats[i].who));
+        }
+
+        pprintf("\nAwaiting retreats\n\n");
+        state = RETREAT;
+    } else {
+        execute_moves();
+        advance_turn();
+    }
+}
+
+bool can_retreat(enum cd_terr t1,
+                 enum cd_terr t2,
+                 enum cd_coast coast)
+{
+    size_t i;
+    for (i = 0; i < cd_retreats_n; i++) {
+        if (cd_retreats[i].who != t1) {
+            continue;
+        }
+
+        size_t j;
+        for (j = 0; j < cd_retreats[i].where_n; j++) {
+            if (cd_retreats[i].where[j] == t2) {
+                return true;
+            }
+        }
+
+        break;
+    }
+
+    return false;
+}
+
+void adjudicate_retreats()
+{
+    unsigned contenders[TERR_N];
+    memset(contenders, 0, sizeof contenders);
+
+    size_t nat_i, i;
+    for (nat_i = 0; nat_i < NATIONS_N; nat_i++) {
+        for (i = 0; i < orders_n[nat_i]; i++) {
+            struct order *o = &orders[nat_i][i];
+
+            if (board[o->t1].occupier != (1u << nat_i)
+                || o->kind != MOVE) {
+                continue;
+            }
+
+            if (can_retreat(o->t1, o->t3, o->coast)) {
+                contenders[o->t3]++;
+            }
+        }
+    }
+
+    pprintf_init();
+    pputchar('\n');
+
+    bool any = false;
+
+    for (nat_i = 0; nat_i < NATIONS_N; nat_i++) {
+        if (orders_n[nat_i] == 0) {
+            continue;
+        }
+
+        pprintf("%s\n", get_nation_name(1u << nat_i));
+
+        for (i = 0; i < orders_n[nat_i]; i++) {
+            any = true;
+
+            struct order *o = &orders[nat_i][i];
+            pprint_order(*o, false);
+
+            if (board[o->t1].occupier != (1u << nat_i)
+                || !dislodged(o->t1)) {
+
+                pprintf(" [IGNORED]\n");
+                continue;
+            }
+
+            if (o->kind != MOVE
+                || !can_retreat(o->t1, o->t3, o->coast)) {
+
+                pprintf(" [FAILS]\n");
+                continue;
+            } else if (contenders[o->t3] > 1) {
+                pprintf(" [FAILS] (bump)\n");
+                continue;
+            } else {
+                pprintf(" [SUCCEEDS]\n");
+                register_successful_move(o);
+            }
+        }
+
+        putchar('\n');
+    }
+
+    if (!any) {
+        pprintf("No retreat orders\n\n");
+    }
+
+    reset_orders();
+
+    execute_moves();
+    advance_turn();
+
+    state = DEFAULT;
+}
+
+void adjudicate()
+{
+    switch (state) {
+    case DEFAULT:
+        adjudicate_orders();
+        break;
+
+    case RETREAT:
+        adjudicate_retreats();
+        break;
+
+    default:
+        break;
+    }
 }
 
 size_t find_order(enum cd_nation nat, enum cd_terr terr)
