@@ -534,7 +534,9 @@ bool can_retreat(enum cd_terr t1,
 
         size_t j;
         for (j = 0; j < cd_retreats[i].where_n; j++) {
-            if (cd_retreats[i].where[j] == t2) {
+            if (cd_retreats[i].where[j].terr == t2
+                && cd_retreats[i].where[j].coasts & coast) {
+
                 return true;
             }
         }
