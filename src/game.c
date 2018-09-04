@@ -388,6 +388,7 @@ void execute_moves()
     for (i = 0; i < successful_moves_n; i++) {
         struct move *m = &successful_moves[i];
         board[m->t1].occupier = NO_NATION;
+        cd_clear_unit(m->t1);
     }
 
     for (i = 0; i < successful_moves_n; i++) {
@@ -395,6 +396,7 @@ void execute_moves()
         board[m->t2].occupier = m->nation;
         board[m->t2].unit     = m->unit;
         board[m->t2].coast    = m->coast;
+        cd_register_unit(m->t1, m->coast, m->unit, m->nation);
     }
 
     successful_moves_n = 0;
