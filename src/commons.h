@@ -26,6 +26,8 @@
 
 #include "list.h"
 
+#define COL_WIDTH 18
+
 #define ARRSIZE(a) (sizeof (a) / sizeof (a)[0])
 
 #define IS_POW2(n) ((n) > 0 && !((n) & ((n)-1)))

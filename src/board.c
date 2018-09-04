@@ -120,7 +120,7 @@ void print_board()
                                         get_nation_name(ti->occupier));
         }
 
-        pprintf("%-18s", buf);
+        pprintf("%*s", -COL_WIDTH, buf);
 
         if (ti->supp_center) {
             pprintf(" (%s)", ti->owner != NO_NATION
