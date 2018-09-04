@@ -100,9 +100,13 @@ int pprintf(const char *format, ...)
             }
 
             assert(pprintf_c < pprintf_w);
-            short space_left = pprintf_w - pprintf_c;
+            int space_left = pprintf_w - pprintf_c;
 
-            unsigned short written = printf("%.*s", space_left, line);
+            int written = printf("%.*s", space_left, line);
+            if (written < 0) {
+                return written;
+            }
+
             if (written == space_left || end != NULL) {
                 if (end != NULL) {
                     putchar('\n');
