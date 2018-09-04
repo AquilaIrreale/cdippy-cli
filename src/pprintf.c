@@ -135,7 +135,7 @@ int pputchar(int c)
         pprintf_block();
     }
 
-    int ret = putchar('\n');
+    int ret = putchar(c);
 
     if (ret == '\n' || pprintf_c + 1 == pprintf_w) {
         pprintf_c = 0;
