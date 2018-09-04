@@ -18,6 +18,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 
 #include "board.h"
@@ -108,15 +109,18 @@ void print_board()
             continue;
         }
 
-        pprintf("%s: ", get_terr_name(t));
+        char buf[20];
 
-        if (!ti->occupier) {
-            pprintf("Not occupied");
+        if (ti->occupier == NO_NATION) {
+            sprintf(buf, "%s: Not occupied", get_terr_name(t));
         } else {
-            pprintf("%s%s %s", get_unit_name(ti->unit),
-                               get_coast_name(ti->coast),
-                               get_nation_name(ti->occupier));
+            sprintf(buf, "%s: %s%s %s", get_terr_name(t),
+                                        get_unit_name(ti->unit),
+                                        get_coast_name(ti->coast),
+                                        get_nation_name(ti->occupier));
         }
+
+        pprintf("%-18s", buf);
 
         if (ti->supp_center) {
             pprintf(" (%s)", ti->owner != NO_NATION
