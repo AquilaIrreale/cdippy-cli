@@ -27,6 +27,36 @@
 
 struct terr_info board[TERR_N];
 
+enum cd_terr home_centers[][5] = {
+    {BUD, TRI, VIE, NO_TERR},
+    {EDI, LON, LVP, NO_TERR},
+    {BRE, MAR, PAR, NO_TERR},
+    {BER, MUN, KIE, NO_TERR},
+    {NAP, ROM, VEN, NO_TERR},
+    {MOS, SEV, STP, WAR, NO_TERR},
+    {ANK, CON, SMY, NO_TERR}
+};
+
+enum cd_unit starting_units[][4] = {
+    {ARMY,  FLEET, ARMY},
+    {FLEET, FLEET, ARMY},
+    {FLEET, ARMY,  ARMY},
+    {ARMY,  ARMY,  FLEET},
+    {FLEET, ARMY,  ARMY},
+    {ARMY,  FLEET, FLEET, ARMY},
+    {FLEET, ARMY,  ARMY}
+};
+
+enum cd_coast starting_coasts[][4] = {
+    {NO_COAST, NO_COAST, NO_COAST},
+    {NO_COAST, NO_COAST, NO_COAST},
+    {NO_COAST, NO_COAST, NO_COAST},
+    {NO_COAST, NO_COAST, NO_COAST},
+    {NO_COAST, NO_COAST, NO_COAST},
+    {NO_COAST, NO_COAST, SOUTH, NO_COAST},
+    {NO_COAST, NO_COAST, NO_COAST}
+};
+
 int istrcmp_wrapper(const void *a, const void *b)
 {
     return istrcmp(a, *(char **)b);
@@ -152,67 +182,26 @@ void board_init()
 
 void board_reset()
 {
-    struct {
-        enum cd_nation nat;
-        enum cd_terr terrs[5];
-        enum cd_unit units[4];
-    } nations[] = {
-        {
-            AUSTRIA,
-            {BUD, TRI, VIE, NO_TERR},
-            {ARMY, FLEET, ARMY}
-        }, {
-            ENGLAND,
-            {EDI, LON, LVP, NO_TERR},
-            {FLEET, FLEET, ARMY}
-        }, {
-            FRANCE,
-            {BRE, MAR, PAR, NO_TERR},
-            {FLEET, ARMY, ARMY}
-        }, {
-            GERMANY,
-            {BER, MUN, KIE, NO_TERR},
-            {ARMY, ARMY, FLEET}
-        }, {
-            ITALY,
-            {NAP, ROM, VEN, NO_TERR},
-            {FLEET, ARMY, ARMY}
-        }, {
-            RUSSIA,
-            {MOS, SEV, STP, WAR, NO_TERR},
-            {ARMY, FLEET, FLEET, ARMY}
-        }, {
-            TURKEY,
-            {ANK, CON, SMY, NO_TERR},
-            {FLEET, ARMY, ARMY}
-        }
-    };
-
-    enum cd_terr t;
-    for (t = 0; t < TERR_N; t++) {
-        board[t].occupier = NO_NATION;
-        board[t].owner = NO_NATION;
-
-        cd_clear_unit(t);
-    }
+    clear_all();
 
     size_t i;
-    for (i = 0; i < ARRSIZE(nations); i++) {
-        size_t j;
-        for (j = 0; nations[i].terrs[j] != NO_TERR; j++) {
-            cd_register_unit(nations[i].terrs[j],
-                             nations[i].terrs[j] != STP ? NO_COAST : SOUTH,
-                             nations[i].units[j],
-                             nations[i].nat);
+    for (i = 0; i < NATIONS_N; i++) {
+        enum cd_nation nat = 1u << i;
 
-            board[nations[i].terrs[j]].occupier = nations[i].nat;
-            board[nations[i].terrs[j]].owner = nations[i].nat;
-            board[nations[i].terrs[j]].unit = nations[i].units[j];
-            board[nations[i].terrs[j]].coast = NO_COAST;
+        size_t j;
+        for (j = 0; home_centers[i][j] != NO_TERR; j++) {
+            enum cd_terr t      = home_centers[i][j];
+            enum cd_unit unit   = starting_units[i][j];
+            enum cd_coast coast = starting_coasts[i][j];
+
+            board[t].occupier = nat;
+            board[t].owner = nat;
+            board[t].unit = unit;
+            board[t].coast = coast;
+
+            cd_register_unit(t, coast, unit, nat);
         }
     }
-
-    board[STP].coast = SOUTH;
 }
 
 void set_terrs(tclist_t tclist, enum cd_unit unit, enum cd_nation nation)
@@ -227,7 +216,7 @@ void set_terrs(tclist_t tclist, enum cd_unit unit, enum cd_nation nation)
         if (err) {
             assert(err != CD_INVALID_TERR);
 
-            const char *errors[] = {
+            static const char *errors[] = {
                 NULL,
                 NULL,
                 "coast specified for single-coast territory",

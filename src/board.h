@@ -43,6 +43,8 @@ struct terr_info {
 
 extern struct terr_info board[TERR_N];
 
+extern enum cd_terr home_centers[][5];
+
 void print_board();
 
 int get_terr(const char *name);
