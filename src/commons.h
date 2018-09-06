@@ -26,6 +26,7 @@
 
 #include "list.h"
 
+#define PROMPT "> "
 #define COL_WIDTH 18
 
 #define ARRSIZE(a) (sizeof (a) / sizeof (a)[0])

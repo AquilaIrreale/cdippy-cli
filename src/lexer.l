@@ -35,8 +35,6 @@
 #include "board.h"
 #include "game.h"
 
-#define PROMPT "> "
-
 #define YY_INPUT(buf, result, max_size)     \
     result = readline_input(buf, max_size)
 
