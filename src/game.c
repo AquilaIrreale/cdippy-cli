@@ -128,49 +128,34 @@ const char *get_era_name(enum era era)
     }
 }
 
-int pprint_order(struct order o, bool newline)
+int pprint_order(struct order *o)
 {
-    int ret;
-
-    switch (o.kind) {
+    switch (o->kind) {
     case HOLD:
-        ret = pprintf("%s H", get_terr_name(o.t1));
-        break;
+        return pprintf("%s H", get_terr_name(o->t1));
 
     case MOVE:
-        ret = pprintf("%s-%s%s%s", get_terr_name(o.t2),
-                                   get_terr_name(o.t3),
-                                   get_coast_name(o.coast),
-                                   o.viac ? " VIA C" : "");
-        break;
+        return pprintf("%s-%s%s%s", get_terr_name(o->t2),
+                                    get_terr_name(o->t3),
+                                    get_coast_name(o->coast),
+                                    o->viac ? " VIA C" : "");
 
     case SUPH:
-        ret = pprintf("%s S %s", get_terr_name(o.t1),
-                                 get_terr_name(o.t2));
-        break;
+        return pprintf("%s S %s", get_terr_name(o->t1),
+                                  get_terr_name(o->t2));
 
     case SUPM:
-        ret = pprintf("%s S %s-%s", get_terr_name(o.t1),
-                                    get_terr_name(o.t2),
-                                    get_terr_name(o.t3));
-        break;
+        return pprintf("%s S %s-%s", get_terr_name(o->t1),
+                                     get_terr_name(o->t2),
+                                     get_terr_name(o->t3));
 
     case CONV:
-        ret = pprintf("%s C %s-%s", get_terr_name(o.t1),
-                                    get_terr_name(o.t2),
-                                    get_terr_name(o.t3));
-        break;
+        return pprintf("%s C %s-%s", get_terr_name(o->t1),
+                                     get_terr_name(o->t2),
+                                     get_terr_name(o->t3));
 
     default:
-        ret = pprintf("!INVALID ORDER!");
-        break;
-    }
-
-    if (newline) {
-        pputchar('\n');
-        return 0;
-    } else {
-        return ret;
+        return pprintf("!INVALID ORDER!");
     }
 }
 
@@ -268,7 +253,8 @@ void list_orders(enum cd_nation nat)
     size_t i;
     for (i = 0; i < orders_n[nat_i]; i++) {
         pprintf("%*zu: ", w, base + i);
-        pprint_order(orders[nat_i][i], true);
+        pprint_order(&orders[nat_i][i]);
+        pputchar('\n');
     }
 }
 
@@ -295,7 +281,8 @@ void list_all_orders()
         size_t j;
         for (j = 0; j < orders_n[n]; j++) {
             pprintf("%*zu: ", w, i++);
-            pprint_order(orders[n][j], true);
+            pprint_order(&orders[n][j]);
+            pputchar('\n');
         }
     }
 
@@ -463,7 +450,7 @@ void adjudicate_orders()
 
         for (i = 0; i < orders_n[nat_i]; i++) {
             struct order *o = &orders[nat_i][i];
-            int w = pprint_order(*o, false);
+            int w = pprint_order(o);
 
             int i;
             for (i = 0; i < COL_WIDTH - w; i++) {
@@ -584,7 +571,7 @@ void adjudicate_retreats()
             any = true;
 
             struct order *o = &orders[nat_i][i];
-            int w = pprint_order(*o, false);
+            int w = pprint_order(o);
 
             int i;
             for (i = 0; i < COL_WIDTH - w; i++) {
