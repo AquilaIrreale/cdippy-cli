@@ -48,7 +48,6 @@ enum game_state state = DEFAULT;
 
 void set_state(enum game_state new_state)
 {
-    /* TODO */
     state = new_state;
 
     switch (state) {
@@ -76,9 +75,9 @@ void print_date()
 {
     enum era era = sgn(year);
 
-    printf("%d %s - %s\n", abs(year),
-                           get_era_name(era),
-                           get_season_name(season));
+    printf("== %d %s - %s ==\n", abs(year),
+                                 get_era_name(era),
+                                 get_season_name(season));
 }
 
 enum cd_nation cur_nat = NO_NATION;

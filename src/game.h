@@ -82,6 +82,8 @@ void order_suph(terrlist_t tlist, enum cd_terr t2);
 void order_supm(terrlist_t tlist, enum cd_terr t2, enum cd_terr t3);
 void order_conv(terrlist_t tlist, enum cd_terr t2, enum cd_terr t3);
 
+void order_build(tclist_t tclist, enum cd_unit unit);
+
 void delete_orders(rangelist_t ranges);
 void delete_all_orders();
 void list_orders(enum cd_nation nat);
