@@ -60,7 +60,12 @@ struct order {
     enum order_kind kind;
     enum cd_terr t1;
     enum cd_terr t2;
-    enum cd_terr t3;
+
+    union {
+        enum cd_terr t3;
+        enum cd_unit unit;
+    };
+
     enum cd_coast coast;
     bool viac;
 };

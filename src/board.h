@@ -45,6 +45,9 @@ extern struct terr_info board[TERR_N];
 
 extern enum cd_terr home_centers[][5];
 
+unsigned units[NATIONS_N];
+unsigned centers[NATIONS_N];
+
 void print_board();
 
 int get_terr(const char *name);
@@ -62,5 +65,12 @@ void set_centers(terrlist_t tlist, enum cd_nation nation);
 void clear_terrs(terrlist_t tlist);
 void clear_centers(terrlist_t tlist);
 void clear_all();
+void remove_all_units(enum cd_nation nat);
+
+void count_units();
+void count_centers();
+void update_centers();
+bool is_home_center(enum cd_terr t, enum cd_nation nat);
+unsigned available_home_centers(enum cd_nation nat);
 
 #endif /* _BOARD_H_ */

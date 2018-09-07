@@ -55,6 +55,7 @@ void range_error(unsigned a, unsigned b);
 
 %token ALL
 %token BOARD
+%token BUILD
 %token BY
 %token C
 %token CLEAR
@@ -173,6 +174,7 @@ order: tlist H                  { order_hold($1); terrlist_free($1); }
      | tlist S TERR             { order_suph($1, $3); terrlist_free($1); }
      | tlist S TERR '-' TERR    { order_supm($1, $3, $5); terrlist_free($1); }
      | tlist C TERR '-' TERR    { order_conv($1, $3, $5); terrlist_free($1); }
+     | BUILD UNIT tclist        { order_build($3, $2); }
 
 %%
 
@@ -184,6 +186,7 @@ const char *tokenstr(int token)
     } keywords[] = {
         {ALL,    "all"},
         {BOARD,  "board"},
+        {BUILD,  "build"},
         {BY,     "by"},
         {C,      "c"},
         {CLEAR,  "clear"},

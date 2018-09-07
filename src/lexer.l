@@ -183,6 +183,7 @@ int recognize_keyword(char *yytext)
     } keywords[] = {
         {"all",    ALL},
         {"board",  BOARD},
+        {"build",  BUILD},
         {"by",     BY},
         {"c",      C},
         {"clear",  CLEAR},

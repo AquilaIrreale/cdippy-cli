@@ -279,6 +279,16 @@ void clear_centers(terrlist_t tlist)
     }
 }
 
+void remove_all_units(enum cd_nation nat)
+{
+    enum cd_terr t;
+    for (t = 0; t < TERR_N; t++) {
+        if (board[t].occupier == nat) {
+            board[t].occupier = NO_NATION;
+        }
+    }
+}
+
 void clear_all()
 {
     enum cd_terr t;
@@ -288,4 +298,83 @@ void clear_all()
 
         cd_clear_unit(t);
     }
+}
+
+void update_centers()
+{
+    enum cd_terr t;
+    for (t = 0; t < TERR_N; t++) {
+        if (board[t].supp_center
+            && board[t].occupier != NO_NATION) {
+
+            board[t].owner = board[t].occupier;
+        }
+    }
+}
+
+unsigned units[NATIONS_N];
+
+void count_units()
+{
+    memset(units, 0, sizeof units);
+
+    enum cd_terr t;
+    for (t = 0; t < TERR_N; t++) {
+        enum cd_nation nat = board[t].occupier;
+
+        if (nat != NO_NATION) {
+            units[trail0s(nat)]++;
+        }
+    }
+}
+
+unsigned centers[NATIONS_N];
+
+void count_centers()
+{
+    memset(centers, 0, sizeof centers);
+
+    enum cd_terr t;
+    for (t = 0; t < TERR_N; t++) {
+        enum cd_nation nat = board[t].owner;
+
+        if (board[t].supp_center
+            && nat != NO_NATION) {
+
+            centers[trail0s(nat)]++;
+        }
+    }
+}
+
+bool is_home_center(enum cd_terr t, enum cd_nation nat)
+{
+    size_t nat_i = trail0s(nat);
+
+    size_t i;
+    for (i = 0; home_centers[nat_i][i] != NO_TERR; i++) {
+        if (home_centers[nat_i][i] == t) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+unsigned available_home_centers(enum cd_nation nat)
+{
+    size_t nat_i = trail0s(nat);
+
+    unsigned ret = 0;
+
+    size_t i;
+    for (i = 0; home_centers[nat_i][i] != NO_TERR; i++) {
+        enum cd_terr t = home_centers[nat_i][i];
+        if (board[t].owner == nat
+            && board[t].occupier == NO_NATION) {
+
+            ret++;
+        }
+    }
+
+    return ret;
 }
