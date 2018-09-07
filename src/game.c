@@ -38,6 +38,25 @@ do {                                   \
     }                                  \
 } while (0)
 
+#define VALIDATE_STATE_NOT(...)                       \
+do {                                                  \
+    static const enum game_state p[] = {__VA_ARGS__}; \
+    size_t i;                                         \
+    for (i = 0; i < ARRSIZE(p); i++) {                \
+        if (state == p[i]) {                          \
+            printf("Cannot do that now (%s)\n",       \
+                   state_names[state]);               \
+            return;                                   \
+        }                                             \
+    }                                                 \
+} while (0);
+
+static const char *state_names[] = {
+    "main phase",
+    "retreat phase",
+    "build phase"
+};
+
 enum game_state {
     DEFAULT,
     RETREAT,
@@ -294,6 +313,7 @@ void delete_all_orders()
     }
 }
 
+/* TODO: list build orders in build phase */
 void list_orders(enum cd_nation nat)
 {
     pprintf_init();
@@ -925,6 +945,7 @@ void register_order(enum cd_nation nat,
 
 void order_hold(terrlist_t tlist)
 {
+    VALIDATE_STATE_NOT(BUILD);
     VALIDATE_CUR_NAT();
 
     while (tlist) {
@@ -936,6 +957,7 @@ void order_hold(terrlist_t tlist)
 
 void order_move(enum cd_terr t2, struct terr_coast t3c, bool viac)
 {
+    VALIDATE_STATE_NOT(BUILD);
     VALIDATE_CUR_NAT();
 
     register_order(cur_nat, MOVE, t2, t2, t3c.terr, t3c.coast, viac);
@@ -943,6 +965,7 @@ void order_move(enum cd_terr t2, struct terr_coast t3c, bool viac)
 
 void order_suph(terrlist_t tlist, enum cd_terr t2)
 {
+    VALIDATE_STATE_NOT(BUILD);
     VALIDATE_CUR_NAT();
 
     while (tlist) {
@@ -954,6 +977,7 @@ void order_suph(terrlist_t tlist, enum cd_terr t2)
 
 void order_supm(terrlist_t tlist, enum cd_terr t2, enum cd_terr t3)
 {
+    VALIDATE_STATE_NOT(BUILD);
     VALIDATE_CUR_NAT();
 
     while (tlist) {
@@ -964,6 +988,7 @@ void order_supm(terrlist_t tlist, enum cd_terr t2, enum cd_terr t3)
 
 void order_conv(terrlist_t tlist, enum cd_terr t2, enum cd_terr t3)
 {
+    VALIDATE_STATE_NOT(BUILD);
     VALIDATE_CUR_NAT();
 
     while (tlist) {
@@ -974,6 +999,7 @@ void order_conv(terrlist_t tlist, enum cd_terr t2, enum cd_terr t3)
 
 void order_build(tclist_t tclist, enum cd_unit unit)
 {
+    VALIDATE_STATE_NOT(DEFAULT, RETREAT);
     VALIDATE_CUR_NAT();
 
     size_t nat_i = trail0s(cur_nat);
