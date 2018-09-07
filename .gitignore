@@ -54,11 +54,13 @@ dkms.conf
 # Other stuff
 *.log
 *.tar*
+.clang_complete
 .deps
 Makefile
 Makefile.in
 aclocal.m4
 autom4te.cache
+input
 cdippy-cli
 compile
 config.h
