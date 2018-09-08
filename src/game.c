@@ -1004,6 +1004,21 @@ void order_build(tclist_t tclist, enum cd_unit unit)
 
     size_t nat_i = trail0s(cur_nat);
 
+    size_t c = 0;
+    tclist_t it;
+    for (it = tclist; it != NULL; LIST_ADVANCE(it)) {
+        size_t i = find_order(cur_nat, tclist->item.terr);
+
+        if (i >= orders_n[nat_i]) {
+            c++;
+        }
+    }
+
+    if (orders_n[nat_i] + c > to_build[nat_i]) {
+        printf("Can only build up to %u new units\n", to_build[nat_i]);
+        return;
+    }
+
     while (tclist) {
         size_t i = find_order(cur_nat, tclist->item.terr);
 
