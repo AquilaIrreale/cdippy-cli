@@ -139,7 +139,7 @@ void print_board()
             continue;
         }
 
-        char buf[20];
+        char buf[128];
 
         if (ti->occupier == NO_NATION) {
             sprintf(buf, "%s: Not occupied", get_terr_name(t));
